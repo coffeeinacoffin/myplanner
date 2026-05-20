@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Planner ⭐</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #fdf6f0 0%, #f5ede4 40%, #ece4da 100%);
+  font-family: 'Quicksand', 'Apple SD Gothic Neo', sans-serif;
+  color: #3a3230;
+}
+
+.sync-banner {
+  padding: 6px 16px; text-align: center;
+  font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 500;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: all 0.3s;
+}
+.sync-banner.ok { background: #e8f5e9; color: #4a7c59; }
+.sync-banner.err { background: #fff3e0; color: #8a6d3b; }
+.sync-banner.loading { background: #e3f2fd; color: #5a7fa0; }
+.sync-banner.hidden { display: none; }
+
+.data-bar {
+  display: flex; gap: 8px; justify-content: flex-end;
+  padding: 6px 16px; flex-wrap: wrap;
+}
+.data-btn {
+  padding: 5px 14px; border: 1px solid rgba(192,172,158,0.35);
+  background: rgba(255,255,255,0.6); border-radius: 8px;
+  font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 600;
+  color: #6b5850; cursor: pointer; transition: all 0.2s;
+}
+.data-btn:hover { background: rgba(255,255,255,0.9); border-color: #6b5850; }
+
+.planner-header {
+  background: linear-gradient(135deg, #5c4a42 0%, #7a6458 100%);
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(92,74,66,0.25);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.planner-title {
+  font-family: 'Gaegu', cursive;
+  font-size: 36px; font-weight: 700;
+  color: #fdf6f0; letter-spacing: 1px;
+}
+
+.nav-tabs {
+  display: flex; gap: 4px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 12px; padding: 4px;
+}
+
+.nav-tab {
+  padding: 7px 16px; border: none; background: transparent;
+  color: rgba(253,246,240,0.65);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border-radius: 9px;
+  transition: all 0.25s; letter-spacing: 0.5px;
+}
+.nav-tab:hover { color: #fdf6f0; background: rgba(255,255,255,0.08); }
+.nav-tab.active {
+  background: rgba(253,246,240,0.2); color: #fdf6f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.content-area {
+  max-width: 1200px; margin: 0 auto;
+  padding: 16px 12px 50px;
+}
+
+.section-label {
+  font-family: 'Gaegu', cursive;
+  font-size: 28px; font-weight: 700;
+  color: #7a6458; margin-bottom: 10px;
+}
+
+.card {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(192,172,158,0.3);
+  box-shadow: 0 2px 16px rgba(92,74,66,0.06);
+  overflow: hidden;
+}
+
+.legend {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  margin-bottom: 12px; padding: 8px 14px;
+  background: rgba(255,255,255,0.5); border-radius: 10px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 500; color: #9a8a80;
+}
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-swatch {
+  width: 14px; height: 14px; border-radius: 4px;
+  border: 1px solid rgba(192,172,158,0.3);
+}
+
+.weekly-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  font-family: 'Quicksand', sans-serif; font-size: 11px;
+}
+.grid-header {
+  background: linear-gradient(180deg, #6b5850 0%, #5c4a42 100%);
+  color: #fdf6f0; padding: 10px 4px; text-align: center;
+  font-weight: 700; font-size: 12px; letter-spacing: 1px;
+  font-family: 'Quicksand', sans-serif;
+}
+.grid-header.time-col { font-size: 10px; letter-spacing: 0.5px; }
+
+.time-cell {
+  padding: 0 4px; display: flex; align-items: center; justify-content: center;
+  font-size: 9.5px; font-weight: 600; color: #9a8a80;
+  background: rgba(245,237,228,0.5);
+  border-bottom: 1px solid rgba(192,172,158,0.15);
+  min-height: 38px; font-family: 'Quicksand', sans-serif;
+}
+.time-cell.half { font-size: 9px; color: #b5a89e; font-weight: 500; min-height: 32px; }
+
+.schedule-cell {
+  border-bottom: 1px solid rgba(192,172,158,0.12);
+  border-right: 1px solid rgba(192,172,158,0.08);
+  min-height: 38px; position: relative; transition: background 0.15s;
+}
+.schedule-cell.class-time {
+  background: linear-gradient(135deg, rgba(180,140,110,0.22) 0%, rgba(160,125,100,0.18) 100%);
+}
+.schedule-cell.class-time::after {
+  content: '📚'; position: absolute; top: 2px; right: 3px;
+  font-size: 9px; opacity: 0.5;
+}
+.schedule-cell.transit {
+  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.06),rgba(180,160,140,0.06) 4px,transparent 4px,transparent 8px);
+}
+.schedule-cell.transit::after {
+  content: '🚶'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); font-size: 10px; opacity: 0.35;
+}
+.schedule-cell.transit-top,
+.schedule-cell.transit-bottom { position: relative; }
+.schedule-cell.transit-top::before,
+.schedule-cell.transit-bottom::before {
+  content: '';
+  position: absolute; left: 0; right: 0;
+  height: 50%;
+  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.1),rgba(180,160,140,0.1) 3px,transparent 3px,transparent 6px);
+  pointer-events: none;
+}
+.schedule-cell.transit-top::before { top: 0; }
+.schedule-cell.transit-bottom::before { bottom: 0; }
+
+.schedule-cell.class-transit-top,
+.schedule-cell.class-transit-bottom {
+  background: linear-gradient(135deg, rgba(180,140,110,0.22) 0%, rgba(160,125,100,0.18) 100%);
+  position: relative;
+}
+.schedule-cell.class-transit-top::before,
+.schedule-cell.class-transit-bottom::before {
+  content: '';
+  position: absolute; left: 0; right: 0;
+  height: 50%;
+  background: repeating-linear-gradient(-45deg,rgba(140,120,100,0.15),rgba(140,120,100,0.15) 3px,transparent 3px,transparent 6px);
+  pointer-events: none;
+}
+.schedule-cell.class-transit-top::before { top: 0; }
+.schedule-cell.class-transit-bottom::before { bottom: 0; }
+
+.schedule-cell:hover { background: rgba(122,100,88,0.06); }
+.schedule-cell.class-time:hover { background: rgba(180,140,110,0.3); }
+
+.cell-input {
+  width: 100%; height: 100%; min-height: 38px;
+  border: none; background: transparent;
+  padding: 4px 6px; font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 500; color: #3a3230; resize: none; outline: none;
+}
+.cell-input:focus { background: rgba(122,100,88,0.05); }
+.cell-input::placeholder { color: rgba(154,138,128,0.4); font-size: 9px; font-weight: 400; }
+
+.daily-layout {
+  display: grid; grid-template-columns: 1fr 300px; gap: 16px;
+}
+@media (max-width: 800px) { .daily-layout { grid-template-columns: 1fr; } }
+
+.daily-time-row {
+  display: grid; grid-template-columns: 80px 28px 1fr;
+  border-bottom: 1px solid rgba(192,172,158,0.12);
+  min-height: 32px; transition: background 0.15s;
+}
+.daily-time-row:hover { background: rgba(122,100,88,0.04); }
+.daily-time-row.class-block { background: rgba(180,140,110,0.15); }
+.daily-time-row.transit-block {
+  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.06),rgba(180,160,140,0.06) 4px,transparent 4px,transparent 8px);
+}
+.daily-time-row.personal-block {
+  background: linear-gradient(135deg, rgba(200,80,70,0.16) 0%, rgba(185,65,55,0.12) 100%);
+}
+
+.daily-time-label {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; color: #9a8a80;
+  border-right: 1px solid rgba(192,172,158,0.15);
+  font-family: 'Quicksand', sans-serif;
+}
+.daily-time-label.half { font-size: 9px; color: #b5a89e; font-weight: 500; }
+
+.daily-input {
+  border: none; background: transparent;
+  padding: 6px 10px; font-family: 'Quicksand', sans-serif;
+  font-size: 13px; font-weight: 500; color: #3a3230; outline: none; width: 100%;
+}
+.daily-input:focus { background: rgba(122,100,88,0.04); }
+.daily-input::placeholder { color: rgba(154,138,128,0.35); font-size: 10px; font-weight: 400; }
+
+.personal-check {
+  width: 15px; height: 15px; cursor: pointer;
+  accent-color: #c05050;
+  margin: 0; flex-shrink: 0;
+}
+
+.sidebar-card {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(192,172,158,0.25);
+  padding: 14px; margin-bottom: 14px;
+}
+
+.sidebar-title {
+  font-family: 'Gaegu', cursive;
+  font-size: 22px; font-weight: 700;
+  color: #6b5850; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.text-area {
+  width: 100%;
+  border: 1px solid rgba(192,172,158,0.25);
+  border-radius: 10px; padding: 10px 12px;
+  font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 500;
+  color: #3a3230; background: rgba(253,246,240,0.5);
+  resize: vertical; outline: none; min-height: 70px;
+  transition: border-color 0.2s;
+}
+.text-area:focus { border-color: rgba(122,100,88,0.4); }
+.text-area.small { min-height: 50px; }
+
+.meal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.meal-label {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 500; color: #9a8a80; margin-bottom: 4px;
+}
+
+.progress-bar-wrap {
+  height: 6px; background: rgba(192,172,158,0.2);
+  border-radius: 3px; overflow: hidden; margin-top: 8px;
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.date-selector, .month-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; margin-bottom: 14px;
+}
+
+.date-display, .month-title {
+  font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 600; color: #5c4a42;
+}
+
+.nav-btn {
+  border: none; background: rgba(122,100,88,0.1);
+  color: #6b5850; width: 32px; height: 32px;
+  border-radius: 50%; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.nav-btn:hover { background: rgba(122,100,88,0.2); }
+
+.completion-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px; color: #9a8a80;
+}
+
+.calendar-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 3px; padding: 14px;
+}
+.cal-header {
+  text-align: center; font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 600; color: #9a8a80;
+  padding: 6px 0; letter-spacing: 1px;
+}
+.cal-day {
+  aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s;
+  background: rgba(255,255,255,0.4);
+  border: 1px solid rgba(192,172,158,0.1);
+}
+.cal-day:hover {
+  background: rgba(255,255,255,0.7);
+  border-color: rgba(122,100,88,0.2); transform: scale(1.04);
+}
+.cal-day.today { border: 2px solid #7a6458; background: rgba(122,100,88,0.08); }
+.cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+.cal-day.empty:hover { transform: none; }
+
+.cal-day-num {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px; font-weight: 500; color: #5c4a42;
+}
+.cal-emoji { font-size: 14px; margin-top: 1px; }
+
+.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div id="sync-banner" class="sync-banner loading">☁️ Firebase 연결 중...</div>
+
+<div class="planner-header">
+  <div class="planner-title">⭐ My Planner</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchView('weekly')">Weekly</button>
+      <button class="nav-tab" onclick="switchView('daily')">Daily</button>
+      <button class="nav-tab" onclick="switchView('monthly')">Monthly</button>
+    </div>
+  </div>
+</div>
+
+<div class="data-bar">
+  <button class="data-btn" onclick="exportData()">📥 Export</button>
+  <button class="data-btn" onclick="document.getElementById('import-file').click()">📤 Import</button>
+  <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+</div>
+
+<div class="content-area">
+  <div id="view-weekly"></div>
+  <div id="view-daily" class="hidden"></div>
+  <div id="view-monthly" class="hidden"></div>
+</div>
+
+<!-- Firebase SDK (v9 compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  🔥 여기에 Firebase 설정값을 붙여넣으세요!          ║
+// ╚══════════════════════════════════════════════════════╝
+const firebaseConfig = {
+    apiKey: "AIzaSyCjgbJB0LIqDKCwp11I-0QfzmbMQmT1V_E",
+    authDomain: "myplanner-b1954.firebaseapp.com",
+    projectId: "myplanner-b1954",
+    storageBucket: "myplanner-b1954.firebasestorage.app",
+    messagingSenderId: "989178592123",
+    appId: "1:989178592123:web:63b3b9d77f75674f229bde"
+};
+
+// ── Firebase init ──
+let db = null;
+let firebaseReady = false;
+const DOC_ID = "planner_main"; // Single document for all data
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  firebaseReady = true;
+} catch(e) {
+  console.error("Firebase init failed:", e);
+}
+
+function showBanner(type, msg) {
+  const b = document.getElementById('sync-banner');
+  b.className = 'sync-banner ' + type;
+  b.textContent = msg;
+  if (type === 'ok') setTimeout(() => { b.classList.add('hidden'); }, 2500);
+}
+
+// ── Constants ──
+const DAYS = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
+const CLASS_SCHEDULE = {
+  MON: [[10.5,13.5],[15,16.5]],
+  TUE: [[12,16.5]],
+  WED: [[9,12],[15,16.5]],
+  THU: [[9,12],[15,16.5]],
+  FRI: [[13.5,17]],
+  SAT: [], SUN: []
+};
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function formatTime(t) {
+  const h = t >= 24 ? t - 24 : t;
+  const hour = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+  const min = (t % 1 === 0.5) ? ':30' : ':00';
+  const ampm = (h >= 12 && h < 24) ? 'PM' : 'AM';
+  return `${Math.floor(hour)}${min} ${ampm}`;
+}
+
+function isClassTime(day, t) { return (CLASS_SCHEDULE[day]||[]).some(([s,e]) => t >= s && t < e); }
+function isTransitTime(day, t) {
+  if (isClassTime(day, t)) return false;
+  return (CLASS_SCHEDULE[day]||[]).some(([s,e]) => (t >= s-0.5 && t < s) || (t >= e && t < e+0.5));
+}
+
+function buildDaySlots(day) {
+  const classSet = new Set(), transitSet = new Set();
+  for (let t = 8; t <= 27; t += 0.5) {
+    if (isClassTime(day, t)) classSet.add(t);
+    else if (isTransitTime(day, t)) transitSet.add(t);
+  }
+  const slots = [];
+  let t = 8;
+  while (t <= 27) {
+    if (classSet.has(t)) { slots.push({ value: t, type: 'class' }); t += 0.5; }
+    else if (transitSet.has(t)) { slots.push({ value: t, type: 'transit' }); t += 0.5; }
+    else {
+      const next = t + 0.5;
+      if (next <= 27 && !classSet.has(next) && !transitSet.has(next)) {
+        slots.push({ value: t, type: 'free', dur: 1 }); t += 1;
+      } else {
+        slots.push({ value: t, type: 'free', dur: 0.5 }); t += 0.5;
+      }
+    }
+  }
+  return slots;
+}
+
+const ALL_HALF = [];
+for (let t = 8; t <= 27; t += 0.5) ALL_HALF.push(t);
+
+// ── State ──
+function defaultState() { return { weeklyNotes:{}, dailyTimeline:{}, dailyTasks:{}, dailyMeals:{}, dailyExercise:{}, dailyPersonal:{} }; }
+
+let state = defaultState();
+let currentView = "weekly";
+let selectedDate = (() => { const n = new Date(); return { year: n.getFullYear(), month: n.getMonth(), day: n.getDate() }; })();
+let currentMonth = { year: selectedDate.year, month: selectedDate.month };
+
+// ── Firebase Save / Load ──
+let saveTimer = null;
+function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveToFirebase, 800); }
+
+async function saveToFirebase() {
+  if (!firebaseReady || !db) return;
+  try {
+    await db.collection("planners").doc(DOC_ID).set(state);
+    showBanner('ok', '☁️ 저장 완료!');
+  } catch(e) {
+    console.error("Save failed:", e);
+    showBanner('err', '⚠️ 저장 실패 — ' + e.message);
+  }
+}
+
+let unsubscribe = null;
+
+// ── Flashcard 학습 기록 조회 ──
+async function getFlashcardLog(dateStr) {
+  if (!firebaseReady || !db) return null;
+  try {
+    const doc = await db.collection("flashcard").doc("flashcard_log").get();
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.log && data.log[dateStr]) {
+        return data.log[dateStr];
+      }
+    }
+    return null;
+  } catch(e) {
+    console.error("Flashcard log fetch failed:", e);
+    return null;
+  }
+}
+
+async function loadFromFirebase() {
+  if (!firebaseReady || !db) {
+    showBanner('err', '⚠️ Firebase 연결 실패 — 설정값을 확인하세요');
+    return;
+  }
+  try {
+    showBanner('loading', '☁️ 데이터 불러오는 중...');
+
+    // 실시간 리스너: 다른 기기에서 변경하면 자동 반영
+    unsubscribe = db.collection("planners").doc(DOC_ID).onSnapshot((doc) => {
+      if (doc.exists) {
+        const newData = doc.data();
+        // 현재 입력 중이 아닐 때만 업데이트 (충돌 방지)
+        if (!document.activeElement || document.activeElement.tagName === 'BODY') {
+          state = { ...defaultState(), ...newData };
+          renderCurrentView();
+          showBanner('ok', '🔄 실시간 동기화됨!');
+        } else {
+          // 입력 중이면 state만 조용히 업데이트 (화면은 안 건드림)
+          state = { ...defaultState(), ...newData };
+        }
+      } else {
+        showBanner('ok', '☁️ 연결 완료! 새 플래너를 시작합니다.');
+      }
+    }, (error) => {
+      console.error("Realtime sync error:", error);
+      showBanner('err', '⚠️ 실시간 동기화 오류 — ' + error.message);
+    });
+
+  } catch(e) {
+    console.error("Load failed:", e);
+    showBanner('err', '⚠️ 불러오기 실패 — ' + e.message);
+  }
+}
+// ── Export / Import (backup) ──
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const now = new Date();
+  a.download = `planner_backup_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      state = { ...defaultState(), ...imported };
+      debouncedSave();
+      renderCurrentView();
+      alert('✅ 데이터를 불러왔습니다!');
+    } catch { alert('❌ 파일 형식이 올바르지 않습니다.'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ── Helpers ──
+function dateKey(y,m,d) { return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function getDaysInMonth(y,m) { return new Date(y,m+1,0).getDate(); }
+function getFirstDay(y,m) { const d = new Date(y,m,1).getDay(); return d===0?6:d-1; }
+
+function getCompletion(dk) {
+  const tl = state.dailyTimeline[dk] || {};
+  const pe = state.dailyPersonal[dk] || {};
+  const parts = dk.split('-');
+  const dow = new Date(+parts[0], +parts[1]-1, +parts[2]).getDay();
+  const dayName = ["SUN","MON","TUE","WED","THU","FRI","SAT"][dow];
+  let fillable = 0, filled = 0;
+  ALL_HALF.forEach(t => {
+    if (isClassTime(dayName, t) || isTransitTime(dayName, t)) return;
+    if (pe[t]) return;
+    fillable++;
+    if (tl[t] && tl[t].trim()) filled++;
+  });
+  return fillable > 0 ? filled / fillable : 0;
+}
+
+function getEmoji(pct) {
+  return pct >= 80 ? '🤩' : pct >= 65 ? '😊' : pct >= 50 ? '🙂' : pct >= 35 ? '😦' : pct >= 20 ? '😴' : '😈';
+}
+function getBarColor(pct) {
+  return pct >= 80 ? 'linear-gradient(90deg,#6dbb5a,#4da03a)'
+    : pct >= 65 ? 'linear-gradient(90deg,#8ab06a,#6d9a50)'
+    : pct >= 50 ? 'linear-gradient(90deg,#a8c060,#8aaa45)'
+    : pct >= 35 ? 'linear-gradient(90deg,#c4a55a,#b09040)'
+    : pct >= 20 ? 'linear-gradient(90deg,#c08070,#a06050)'
+    : 'linear-gradient(90deg,#9a7090,#805080)';
+}
+function getCalEmoji(comp) {
+  return comp >= 0.8 ? '🤩' : comp >= 0.65 ? '😊' : comp >= 0.5 ? '🙂' : comp >= 0.35 ? '😦' : comp >= 0.2 ? '😴' : comp > 0 ? '😈' : '';
+}
+
+function renderCurrentView() {
+  if (currentView === 'weekly') renderWeekly();
+  else if (currentView === 'daily') renderDaily();
+  else renderMonthly();
+}
+
+function switchView(v) {
+  currentView = v;
+  document.querySelectorAll('.nav-tab').forEach((btn,i) => {
+    btn.classList.toggle('active', ["weekly","daily","monthly"][i] === v);
+  });
+  document.getElementById('view-weekly').classList.toggle('hidden', v !== 'weekly');
+  document.getElementById('view-daily').classList.toggle('hidden', v !== 'daily');
+  document.getElementById('view-monthly').classList.toggle('hidden', v !== 'monthly');
+  renderCurrentView();
+}
+
+// ── WEEKLY ──
+function getWeeklyCellType(day, hourStart) {
+  const h1Class = isClassTime(day, hourStart);
+  const h2Class = isClassTime(day, hourStart + 0.5);
+  const h1Transit = isTransitTime(day, hourStart);
+  const h2Transit = isTransitTime(day, hourStart + 0.5);
+  const hasClass = h1Class || h2Class;
+  const hasTransit = h1Transit || h2Transit;
+  if (hasClass && hasTransit) { return h1Transit ? 'class-transit-top' : 'class-transit-bottom'; }
+  if (hasClass) return 'class';
+  if (h1Transit && h2Transit) return 'transit';
+  if (h1Transit) return 'transit-top';
+  if (h2Transit) return 'transit-bottom';
+  return 'free';
+}
+
+function renderWeekly() {
+  const todayIdx = (() => { const d = new Date().getDay(); return d===0?6:d-1; })();
+  const hourRows = [];
+  for (let h = 8; h <= 27; h++) hourRows.push(h);
+
+  let html = `
+    <div class="section-label">⭐ Weekly Schedule</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(180,140,110,0.22)"></div><span>수업</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(-45deg,rgba(180,160,140,0.15),rgba(180,160,140,0.15) 3px,transparent 3px,transparent 6px)"></div><span>이동</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(255,255,255,0.6)"></div><span>자유 시간</span></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <div class="weekly-grid" style="min-width:780px">
+        <div class="grid-header time-col">TIME</div>`;
+
+  DAYS.forEach((d,i) => {
+    const bg = i === todayIdx ? 'background:linear-gradient(180deg,#8b6f5e,#7a5e4e)' : '';
+    html += `<div class="grid-header" style="${bg}">${d}</div>`;
+  });
+
+  hourRows.forEach(h => {
+    html += `<div class="time-cell">${formatTime(h)}</div>`;
+    DAYS.forEach(day => {
+      const type = getWeeklyCellType(day, h);
+      const key = `${day}-${h}`;
+      const val = state.weeklyNotes[key] || '';
+      if (type === 'transit') {
+        html += `<div class="schedule-cell transit"></div>`;
+      } else if (type === 'class') {
+        html += `<div class="schedule-cell class-time">
+          <input class="cell-input" value="${escHtml(val)}" placeholder="수업"
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
+      } else if (type === 'class-transit-top' || type === 'class-transit-bottom') {
+        html += `<div class="schedule-cell ${type}">
+          <input class="cell-input" value="${escHtml(val)}" placeholder="수업"
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
+      } else if (type === 'transit-top' || type === 'transit-bottom') {
+        html += `<div class="schedule-cell ${type}">
+          <input class="cell-input" value="${escHtml(val)}" placeholder=""
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
+      } else {
+        html += `<div class="schedule-cell">
+          <input class="cell-input" value="${escHtml(val)}" placeholder=""
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
+      }
+    });
+  });
+
+  html += `</div></div>`;
+  document.getElementById('view-weekly').innerHTML = html;
+}
+
+// ── Personal event toggle ──
+function togglePersonal(dk, slotValue, dur) {
+  if (!state.dailyPersonal[dk]) state.dailyPersonal[dk] = {};
+  const pe = state.dailyPersonal[dk];
+  const isOn = !!pe[slotValue];
+  if (isOn) {
+    delete pe[slotValue];
+    if (dur === 1) delete pe[slotValue + 0.5];
+  } else {
+    pe[slotValue] = true;
+    if (dur === 1) pe[slotValue + 0.5] = true;
+  }
+  debouncedSave();
+  renderDaily();
+}
+
+// ── DAILY ──
+function renderDaily() {
+  const dk = dateKey(selectedDate.year, selectedDate.month, selectedDate.day);
+  const comp = getCompletion(dk);
+  const pct = Math.round(comp * 100);
+  const dow = new Date(selectedDate.year, selectedDate.month, selectedDate.day).getDay();
+  const dayName = ["SUN","MON","TUE","WED","THU","FRI","SAT"][dow];
+  const daySlots = buildDaySlots(dayName);
+
+  const tasks = state.dailyTasks[dk] || '';
+  const meals = state.dailyMeals[dk] || {};
+  const exercise = state.dailyExercise[dk] || '';
+
+  // D-day
+  const targetDate = new Date(2028, 0, 3);
+  const currentDate = new Date(selectedDate.year, selectedDate.month, selectedDate.day);
+  const diffTime = targetDate.getTime() - currentDate.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const ddayText = diffDays > 0 ? `D-${diffDays}` : diffDays === 0 ? 'D-Day 🎉' : `D+${Math.abs(diffDays)}`;
+
+  let html = `
+    <div class="date-selector">
+      <button class="nav-btn" onclick="shiftDate(-1)">‹</button>
+      <div class="date-display">${selectedDate.year}. ${selectedDate.month+1}. ${selectedDate.day} (${dayName})</div>
+      <button class="nav-btn" onclick="shiftDate(1)">›</button>
+    </div>
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="display:inline-block;background:linear-gradient(135deg,#5c4a42,#7a6458);color:#fdf6f0;padding:4px 14px;border-radius:20px;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">
+        📅 ${ddayText}
+      </div>
+      <div class="completion-badge">달성률 ${pct}% ${getEmoji(pct)}</div>
+      <div class="progress-bar-wrap" style="max-width:240px;margin:4px auto 0">
+        <div class="progress-bar-fill" style="width:${pct}%;background:${getBarColor(pct)}"></div>
+      </div>
+    </div>
+    <div class="daily-layout">
+      <div>
+        <div class="section-label">⏰ Timeline</div>
+        <div class="legend" style="margin-bottom:8px;">
+          <div class="legend-item"><div class="legend-swatch" style="background:rgba(180,140,110,0.22)"></div><span>수업</span></div>
+          <div class="legend-item"><div class="legend-swatch" style="background:rgba(200,80,70,0.20)"></div><span>개인 스케줄</span></div>
+          <div class="legend-item"><span style="font-size:13px">☑️</span><span>체크 → 달성률 제외</span></div>
+        </div>
+        <div class="card">`;
+
+  daySlots.forEach(slot => {
+    const isHalf = (slot.value % 1 !== 0);
+    const pe = state.dailyPersonal[dk] || {};
+    const isPersonal = !!pe[slot.value];
+
+    if (slot.type === 'transit') {
+      html += `<div class="daily-time-row transit-block">
+        <div class="daily-time-label ${isHalf?'half':''}">${formatTime(slot.value)}</div>
+        <div></div>
+        <div style="display:flex;align-items:center;padding:0 10px;font-size:11px;color:#b5a89e;font-family:'Quicksand',sans-serif;font-weight:500;">🚶 이동</div>
+      </div>`;
+    } else if (slot.type === 'class') {
+      const val = (state.dailyTimeline[dk] || {})[slot.value] || '';
+      html += `<div class="daily-time-row class-block">
+        <div class="daily-time-label ${isHalf?'half':''}">${formatTime(slot.value)}</div>
+        <div></div>
+        <input class="daily-input" value="${escHtml(val)}" placeholder="📚 수업"
+          oninput="if(!state.dailyTimeline['${dk}'])state.dailyTimeline['${dk}']={};state.dailyTimeline['${dk}'][${slot.value}]=this.value;debouncedSave();updateBadge('${dk}')">
+      </div>`;
+    } else {
+      const val = (state.dailyTimeline[dk] || {})[slot.value] || '';
+      const h = slot.dur === 1 ? 'min-height:48px' : '';
+      const dur = slot.dur || 0.5;
+      const rowClass = isPersonal ? 'daily-time-row personal-block' : 'daily-time-row';
+      html += `<div class="${rowClass}" style="${h}">
+        <div class="daily-time-label">${formatTime(slot.value)}</div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <input type="checkbox" class="personal-check" ${isPersonal?'checked':''}
+            onchange="togglePersonal('${dk}',${slot.value},${dur})"
+            title="개인 스케줄 (달성률 제외)">
+        </div>
+        <input class="daily-input" value="${escHtml(val)}" placeholder="${isPersonal ? '📌 개인 스케줄' : '할 일을 입력하세요...'}"
+          oninput="if(!state.dailyTimeline['${dk}'])state.dailyTimeline['${dk}']={};state.dailyTimeline['${dk}'][${slot.value}]=this.value;${dur===1 ? `state.dailyTimeline['${dk}'][${slot.value+0.5}]=this.value;` : ''}debouncedSave();updateBadge('${dk}')">
+      </div>`;
+    }
+  });
+
+  html += `</div></div>
+    <div>
+      <div class="section-label">📋 Side Notes</div>
+      <div class="sidebar-card" id="flashcard-widget">
+        <div class="sidebar-title">📚 법학 플래시카드</div>
+        <div style="display:flex;align-items:center;gap:10px;font-family:'Quicksand',sans-serif;font-size:13px;color:#9a8a80;">
+          불러오는 중...
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">✓ To Do List</div>
+        <textarea class="text-area" placeholder="- 과제 제출&#10;- 이메일 확인&#10;- 발표 준비"
+          oninput="state.dailyTasks['${dk}']=this.value;debouncedSave()">${escHtml(tasks)}</textarea>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">🍽 Meal Log</div>
+        <div class="meal-grid">
+          <div>
+            <div class="meal-label">점심 Lunch</div>
+            <textarea class="text-area small" placeholder="메뉴를 적어주세요"
+              oninput="if(!state.dailyMeals['${dk}'])state.dailyMeals['${dk}']={};state.dailyMeals['${dk}'].lunch=this.value;debouncedSave()">${escHtml(meals.lunch||'')}</textarea>
+          </div>
+          <div>
+            <div class="meal-label">저녁 Dinner</div>
+            <textarea class="text-area small" placeholder="메뉴를 적어주세요"
+              oninput="if(!state.dailyMeals['${dk}'])state.dailyMeals['${dk}']={};state.dailyMeals['${dk}'].dinner=this.value;debouncedSave()">${escHtml(meals.dinner||'')}</textarea>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">💪 Workout Log</div>
+        <textarea class="text-area" style="min-height:60px" placeholder="운동 종류, 시간, 세트 등&#10;예: 러닝 30분, 스쿼트 3x15"
+          oninput="state.dailyExercise['${dk}']=this.value;debouncedSave()">${escHtml(exercise)}</textarea>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('view-daily').innerHTML = html;
+
+  // 플래시카드 학습 현황 로드
+  getFlashcardLog(dk).then(log => {
+    const widget = document.getElementById('flashcard-widget');
+    if (!widget) return;
+
+    if (log && log.sessions > 0) {
+      const pct = Math.round((log.correct / log.total) * 100);
+      widget.innerHTML = `
+        <div class="sidebar-title">📚 법학 플래시카드</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:28px;">⭕</span>
+          <div style="font-family:'Quicksand',sans-serif;">
+            <div style="font-size:14px;font-weight:700;color:#4a7c59;">학습 완료!</div>
+            <div style="font-size:11px;color:#9a8a80;margin-top:2px;">
+              ${log.sessions}회 학습 · ${log.correct}/${log.total} 정답 (${pct}%)
+            </div>
+          </div>
+        </div>
+        <a href="https://coffeeinacoffin.github.io/law_flashcard/" target="_blank"
+          style="display:block;margin-top:10px;padding:8px;border-radius:8px;background:rgba(122,100,88,0.08);
+          text-align:center;font-family:'Quicksand',sans-serif;font-size:12px;font-weight:600;
+          color:#6b5850;text-decoration:none;transition:background 0.2s;"
+          onmouseover="this.style.background='rgba(122,100,88,0.15)'"
+          onmouseout="this.style.background='rgba(122,100,88,0.08)'">
+          🔗 이어서 학습하기
+        </a>`;
+    } else {
+      widget.innerHTML = `
+        <div class="sidebar-title">📚 법학 플래시카드</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:28px;">❌</span>
+          <div style="font-family:'Quicksand',sans-serif;">
+            <div style="font-size:14px;font-weight:700;color:#c05050;">미학습</div>
+            <div style="font-size:11px;color:#9a8a80;margin-top:2px;">오늘 아직 학습 기록이 없어요</div>
+          </div>
+        </div>
+        <a href="https://coffeeinacoffin.github.io/law_flashcard/" target="_blank"
+          style="display:block;margin-top:10px;padding:8px;border-radius:8px;background:linear-gradient(135deg,#5c4a42,#7a6458);
+          text-align:center;font-family:'Quicksand',sans-serif;font-size:12px;font-weight:600;
+          color:#fdf6f0;text-decoration:none;transition:opacity 0.2s;"
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'">
+          📖 지금 학습하러 가기
+        </a>`;
+    }
+  });
+}
+
+function updateBadge(dk) {
+  const comp = getCompletion(dk);
+  const pct = Math.round(comp * 100);
+  const badge = document.querySelector('.completion-badge');
+  const bar = document.querySelector('.progress-bar-fill');
+  if (badge) badge.textContent = `달성률 ${pct}% ${getEmoji(pct)}`;
+  if (bar) { bar.style.width = pct+'%'; bar.style.background = getBarColor(pct); }
+}
+
+function shiftDate(delta) {
+  const d = new Date(selectedDate.year, selectedDate.month, selectedDate.day + delta);
+  selectedDate = { year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
+  renderDaily();
+}
+
+// ── MONTHLY ──
+function renderMonthly() {
+  const { year, month } = currentMonth;
+  const dim = getDaysInMonth(year, month);
+  const fd = getFirstDay(year, month);
+  const today = new Date();
+
+  let html = `
+    <div class="month-nav">
+      <button class="nav-btn" onclick="shiftMonth(-1)">‹</button>
+      <div class="month-title">${MONTH_NAMES[month]} ${year}</div>
+      <button class="nav-btn" onclick="shiftMonth(1)">›</button>
+    </div>
+    <div class="legend" style="justify-content:center">
+      <div class="legend-item"><span>🤩</span><span>80%+</span></div>
+      <div class="legend-item"><span>😊</span><span>65%+</span></div>
+      <div class="legend-item"><span>🙂</span><span>50%+</span></div>
+      <div class="legend-item"><span>😦</span><span>35%+</span></div>
+      <div class="legend-item"><span>😴</span><span>20%+</span></div>
+      <div class="legend-item"><span>😈</span><span>~20%</span></div>
+    </div>
+    <div class="card">
+      <div class="calendar-grid">`;
+
+  ["MON","TUE","WED","THU","FRI","SAT","SUN"].forEach(d => {
+    html += `<div class="cal-header">${d}</div>`;
+  });
+
+  for (let i = 0; i < fd; i++) html += `<div class="cal-day empty"></div>`;
+
+  for (let d = 1; d <= dim; d++) {
+    const dk = dateKey(year, month, d);
+    const comp = getCompletion(dk);
+    const ce = getCalEmoji(comp);
+    const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
+
+    html += `<div class="cal-day ${isToday?'today':''}" onclick="goToDay(${year},${month},${d})" title="${Math.round(comp*100)}% 달성">
+      <div class="cal-day-num">${d}</div>
+      ${ce ? `<div class="cal-emoji">${ce}</div>` : ''}
+    </div>`;
+  }
+
+  html += `</div></div>`;
+  document.getElementById('view-monthly').innerHTML = html;
+}
+
+function shiftMonth(delta) {
+  let m = currentMonth.month + delta;
+  let y = currentMonth.year;
+  if (m < 0) { m = 11; y--; }
+  if (m > 11) { m = 0; y++; }
+  currentMonth = { year: y, month: m };
+  renderMonthly();
+}
+
+function goToDay(y,m,d) {
+  selectedDate = { year: y, month: m, day: d };
+  switchView('daily');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init: load from Firebase then render ──
+loadFromFirebase().then(() => {
+  renderWeekly();
+});
+</script>
+</body>
+</html>
