@@ -7,22 +7,29 @@
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   min-height: 100vh;
   background: linear-gradient(160deg, #fdf6f0 0%, #f5ede4 40%, #ece4da 100%);
   font-family: 'Quicksand', 'Apple SD Gothic Neo', sans-serif;
   color: #3a3230;
 }
+
 .sync-banner {
   padding: 6px 16px; text-align: center;
   font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 500;
-  border-bottom: 1px solid rgba(0,0,0,0.06); transition: all 0.3s;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: all 0.3s;
 }
 .sync-banner.ok { background: #e8f5e9; color: #4a7c59; }
 .sync-banner.err { background: #fff3e0; color: #8a6d3b; }
 .sync-banner.loading { background: #e3f2fd; color: #5a7fa0; }
 .sync-banner.hidden { display: none; }
-.data-bar { display: flex; gap: 8px; justify-content: flex-end; padding: 6px 16px; flex-wrap: wrap; }
+
+.data-bar {
+  display: flex; gap: 8px; justify-content: flex-end;
+  padding: 6px 16px; flex-wrap: wrap;
+}
 .data-btn {
   padding: 5px 14px; border: 1px solid rgba(192,172,158,0.35);
   background: rgba(255,255,255,0.6); border-radius: 8px;
@@ -30,609 +37,1273 @@ body {
   color: #6b5850; cursor: pointer; transition: all 0.2s;
 }
 .data-btn:hover { background: rgba(255,255,255,0.9); border-color: #6b5850; }
+
 .planner-header {
   background: linear-gradient(135deg, #5c4a42 0%, #7a6458 100%);
-  padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 4px 20px rgba(92,74,66,0.25); position: sticky; top: 0; z-index: 100;
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(92,74,66,0.25);
+  position: sticky; top: 0; z-index: 100;
 }
-.planner-title { font-family: 'Gaegu', cursive; font-size: 36px; font-weight: 700; color: #fdf6f0; }
-.nav-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.12); border-radius: 12px; padding: 4px; }
+
+.planner-title {
+  font-family: 'Gaegu', cursive;
+  font-size: 36px; font-weight: 700;
+  color: #fdf6f0; letter-spacing: 1px;
+}
+
+.nav-tabs {
+  display: flex; gap: 4px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 12px; padding: 4px;
+}
+
 .nav-tab {
-  padding: 7px 16px; border: none; background: transparent; color: rgba(253,246,240,0.65);
-  font-family: 'Quicksand', sans-serif; font-size: 12px; font-weight: 500;
-  cursor: pointer; border-radius: 9px; transition: all 0.25s;
+  padding: 7px 16px; border: none; background: transparent;
+  color: rgba(253,246,240,0.65);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border-radius: 9px;
+  transition: all 0.25s; letter-spacing: 0.5px;
 }
 .nav-tab:hover { color: #fdf6f0; background: rgba(255,255,255,0.08); }
-.nav-tab.active { background: rgba(253,246,240,0.2); color: #fdf6f0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-.content-area { max-width: 1200px; margin: 0 auto; padding: 16px 12px 50px; }
-.section-label { font-family: 'Gaegu', cursive; font-size: 28px; font-weight: 700; color: #7a6458; margin-bottom: 10px; }
-.card {
-  background: rgba(255,255,255,0.72); backdrop-filter: blur(12px);
-  border-radius: 16px; border: 1px solid rgba(192,172,158,0.3);
-  box-shadow: 0 2px 16px rgba(92,74,66,0.06); overflow: hidden;
+.nav-tab.active {
+  background: rgba(253,246,240,0.2); color: #fdf6f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+
+.content-area {
+  max-width: 1200px; margin: 0 auto;
+  padding: 16px 12px 50px;
+}
+
+.section-label {
+  font-family: 'Gaegu', cursive;
+  font-size: 28px; font-weight: 700;
+  color: #7a6458; margin-bottom: 10px;
+}
+
+.card {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(192,172,158,0.3);
+  box-shadow: 0 2px 16px rgba(92,74,66,0.06);
+  overflow: hidden;
+}
+
 .legend {
   display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-  margin-bottom: 12px; padding: 8px 14px; background: rgba(255,255,255,0.5);
-  border-radius: 10px; font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 500; color: #9a8a80;
+  margin-bottom: 12px; padding: 8px 14px;
+  background: rgba(255,255,255,0.5); border-radius: 10px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 500; color: #9a8a80;
 }
 .legend-item { display: flex; align-items: center; gap: 4px; }
-.legend-swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(192,172,158,0.3); }
+.legend-swatch {
+  width: 14px; height: 14px; border-radius: 4px;
+  border: 1px solid rgba(192,172,158,0.3);
+}
 
-/* Schedule editor */
-.schedule-editor {
-  background: rgba(255,255,255,0.6); border-radius: 14px;
-  border: 1px solid rgba(192,172,158,0.25); padding: 14px; margin-bottom: 16px;
-}
-.schedule-editor-title {
-  font-family: 'Gaegu', cursive; font-size: 20px; font-weight: 700;
-  color: #6b5850; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px;
-}
-.schedule-row { display: grid; grid-template-columns: 50px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
-.schedule-day-label { font-family: 'Quicksand', sans-serif; font-size: 12px; font-weight: 700; color: #6b5850; }
-.schedule-input {
-  border: 1px solid rgba(192,172,158,0.3); border-radius: 8px; padding: 6px 10px;
-  font-family: 'Quicksand', sans-serif; font-size: 12px; font-weight: 500; color: #3a3230;
-  background: rgba(253,246,240,0.5); outline: none;
-}
-.schedule-input:focus { border-color: rgba(122,100,88,0.5); }
-.schedule-input::placeholder { color: rgba(154,138,128,0.4); font-size: 11px; }
-.schedule-save-btn {
-  margin-top: 8px; padding: 7px 20px; border: none;
-  background: linear-gradient(135deg,#5c4a42,#7a6458); color: #fdf6f0; border-radius: 8px;
-  cursor: pointer; font-family: 'Quicksand', sans-serif; font-size: 12px; font-weight: 600;
-}
-.schedule-save-btn:hover { opacity: 0.85; }
-
-/* Week nav */
-.week-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 14px; }
-.week-title { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 600; color: #5c4a42; }
-.week-today-btn {
-  padding: 4px 12px; border: 1px solid rgba(122,100,88,0.3); background: rgba(255,255,255,0.6);
-  border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 600;
-  color: #6b5850; cursor: pointer;
-}
-.week-today-btn:hover { background: rgba(255,255,255,0.9); }
-
-/* Weekly grid */
 .weekly-grid {
-  display: grid; grid-template-columns: 80px repeat(7, 1fr);
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
   font-family: 'Quicksand', sans-serif; font-size: 11px;
 }
 .grid-header {
   background: linear-gradient(180deg, #6b5850 0%, #5c4a42 100%);
-  color: #fdf6f0; padding: 8px 4px; text-align: center;
-  font-weight: 700; font-size: 11px; letter-spacing: 0.5px;
+  color: #fdf6f0; padding: 10px 4px; text-align: center;
+  font-weight: 700; font-size: 12px; letter-spacing: 1px;
+  font-family: 'Quicksand', sans-serif;
 }
-.grid-header .header-date { font-size: 9px; font-weight: 500; opacity: 0.75; margin-top: 2px; }
-.grid-header.time-col { font-size: 10px; }
-.grid-header.today-col { background: linear-gradient(180deg, #8b6f5e 0%, #7a5e4e 100%); }
+.grid-header.time-col { font-size: 10px; letter-spacing: 0.5px; }
+
 .time-cell {
   padding: 0 4px; display: flex; align-items: center; justify-content: center;
-  font-size: 9.5px; font-weight: 600; color: #9a8a80; background: rgba(245,237,228,0.5);
-  border-bottom: 1px solid rgba(192,172,158,0.15); min-height: 38px;
+  font-size: 9.5px; font-weight: 600; color: #9a8a80;
+  background: rgba(245,237,228,0.5);
+  border-bottom: 1px solid rgba(192,172,158,0.15);
+  min-height: 38px; font-family: 'Quicksand', sans-serif;
 }
-.schedule-cell {
-  border-bottom: 1px solid rgba(192,172,158,0.12); border-right: 1px solid rgba(192,172,158,0.08);
-  min-height: 38px; position: relative; overflow: hidden;
-}
-.schedule-cell:hover { background: rgba(122,100,88,0.04); }
-.cell-input {
-  width: 100%; height: 100%; min-height: 38px; border: none; background: transparent;
-  padding: 4px 6px; font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 500;
-  color: #3a3230; outline: none; position: relative; z-index: 2;
-}
-.cell-input::placeholder { color: rgba(154,138,128,0.4); font-size: 9px; }
-.cell-overlay {
-  position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none;
-}
-.cell-overlay.class-full { top: 0; bottom: 0; background: rgba(180,140,110,0.22); }
-.cell-overlay.class-top { top: 0; height: 50%; background: rgba(180,140,110,0.22); }
-.cell-overlay.class-bottom { bottom: 0; height: 50%; background: rgba(180,140,110,0.22); }
-.cell-overlay.transit-top {
-  top: 0; height: 50%;
-  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.12),rgba(180,160,140,0.12) 3px,transparent 3px,transparent 6px);
-}
-.cell-overlay.transit-bottom {
-  bottom: 0; height: 50%;
-  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.12),rgba(180,160,140,0.12) 3px,transparent 3px,transparent 6px);
-}
-.cell-overlay.transit-full {
-  top: 0; bottom: 0;
-  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.08),rgba(180,160,140,0.08) 3px,transparent 3px,transparent 6px);
-}
+.time-cell.half { font-size: 9px; color: #b5a89e; font-weight: 500; min-height: 32px; }
 
-/* Daily */
-.daily-layout { display: grid; grid-template-columns: 1fr 300px; gap: 16px; }
-@media (max-width: 800px) { .daily-layout { grid-template-columns: 1fr; } }
+.schedule-cell {
+  border-bottom: 1px solid rgba(192,172,158,0.12);
+  border-right: 1px solid rgba(192,172,158,0.08);
+  min-height: 38px; position: relative; transition: background 0.15s;
+}
+.schedule-cell.class-time {
+  background: linear-gradient(135deg, rgba(180,140,110,0.22) 0%, rgba(160,125,100,0.18) 100%);
+}
+.schedule-cell.class-time::after {
+  content: '📚'; position: absolute; top: 2px; right: 3px;
+  font-size: 9px; opacity: 0.5;
+}
+.schedule-cell.transit {
+  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.06),rgba(180,160,140,0.06) 4px,transparent 4px,transparent 8px);
+}
+.schedule-cell.transit::after {
+  content: '🚶'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); font-size: 10px; opacity: 0.35;
+}
+.schedule-cell.transit-top,
+.schedule-cell.transit-bottom { position: relative; }
+.schedule-cell.transit-top::before,
+.schedule-cell.transit-bottom::before {
+  content: '';
+  position: absolute; left: 0; right: 0;
+  height: 50%;
+  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.1),rgba(180,160,140,0.1) 3px,transparent 3px,transparent 6px);
+  pointer-events: none;
+}
+.schedule-cell.transit-top::before { top: 0; }
+.schedule-cell.transit-bottom::before { bottom: 0; }
+
+.schedule-cell.class-transit-top,
+.schedule-cell.class-transit-bottom {
+  background: linear-gradient(135deg, rgba(180,140,110,0.22) 0%, rgba(160,125,100,0.18) 100%);
+  position: relative;
+}
+.schedule-cell.class-transit-top::before,
+.schedule-cell.class-transit-bottom::before {
+  content: '';
+  position: absolute; left: 0; right: 0;
+  height: 50%;
+  background: repeating-linear-gradient(-45deg,rgba(140,120,100,0.15),rgba(140,120,100,0.15) 3px,transparent 3px,transparent 6px);
+  pointer-events: none;
+}
+.schedule-cell.class-transit-top::before { top: 0; }
+.schedule-cell.class-transit-bottom::before { bottom: 0; }
+
+.schedule-cell:hover { background: rgba(122,100,88,0.06); }
+.schedule-cell.class-time:hover { background: rgba(180,140,110,0.3); }
+
+.cell-input {
+  width: 100%; height: 100%; min-height: 38px;
+  border: none; background: transparent;
+  padding: 4px 6px; font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 500; color: #3a3230; resize: none; outline: none;
+}
+.cell-input:focus { background: rgba(122,100,88,0.05); }
+.cell-input::placeholder { color: rgba(154,138,128,0.4); font-size: 9px; font-weight: 400; }
+
+/* Daily sub-tabs */
+.daily-tabs {
+  display: flex; gap: 0;
+  background: rgba(255,255,255,0.5); border-radius: 12px; padding: 3px;
+  border: 1px solid rgba(192,172,158,0.25);
+  margin-bottom: 14px;
+}
+.daily-tab {
+  flex: 1; padding: 9px 4px; border: none; background: transparent;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px; font-weight: 600; color: #9a8a80;
+  cursor: pointer; border-radius: 9px; transition: all 0.2s;
+  text-align: center; white-space: nowrap;
+}
+.daily-tab:hover { color: #6b5850; background: rgba(255,255,255,0.4); }
+.daily-tab.active {
+  background: linear-gradient(135deg, #5c4a42, #7a6458);
+  color: #fdf6f0; box-shadow: 0 2px 8px rgba(92,74,66,0.2);
+}
+.daily-panel { display: none; }
+.daily-panel.active { display: block; }
+
+/* Mobile card-style task entries */
+.task-item {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(192,172,158,0.2);
+  border-radius: 10px; padding: 10px; margin-bottom: 8px;
+  position: relative;
+}
+.task-name-input {
+  width: 100%; border: none; background: transparent;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px; font-weight: 600; color: #3a3230; outline: none;
+  padding: 0 24px 0 0; margin-bottom: 6px;
+}
+.task-name-input::placeholder { color: rgba(154,138,128,0.4); font-weight: 400; font-size: 13px; }
+.task-meta {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.task-meta select {
+  border: 1px solid rgba(192,172,158,0.3); border-radius: 6px; padding: 5px 6px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 500; color: #3a3230; background: rgba(253,246,240,0.6);
+  outline: none; flex: 1; min-width: 0;
+}
+.task-remove-mobile {
+  position: absolute; top: 8px; right: 8px;
+  border: none; background: none; color: #c09080; cursor: pointer;
+  font-size: 18px; line-height: 1;
+}
+.task-remove-mobile:hover { color: #a05040; }
+
 .daily-time-row {
   display: grid; grid-template-columns: 80px 28px 1fr;
   border-bottom: 1px solid rgba(192,172,158,0.12);
-  min-height: 38px; position: relative; overflow: hidden;
+  min-height: 32px; transition: background 0.15s;
 }
 .daily-time-row:hover { background: rgba(122,100,88,0.04); }
-.daily-time-row.personal-block { background: linear-gradient(135deg, rgba(200,80,70,0.16) 0%, rgba(185,65,55,0.12) 100%); }
+.daily-time-row.class-block { background: rgba(180,140,110,0.15); }
+.daily-time-row.transit-block {
+  background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.06),rgba(180,160,140,0.06) 4px,transparent 4px,transparent 8px);
+}
+.daily-time-row.personal-block {
+  background: linear-gradient(135deg, rgba(200,80,70,0.16) 0%, rgba(185,65,55,0.12) 100%);
+}
+
 .daily-time-label {
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 600; color: #9a8a80;
   border-right: 1px solid rgba(192,172,158,0.15);
-  font-family: 'Quicksand', sans-serif; position: relative; z-index: 2;
+  font-family: 'Quicksand', sans-serif;
 }
+.daily-time-label.half { font-size: 9px; color: #b5a89e; font-weight: 500; }
+
 .daily-input {
-  border: none; background: transparent; padding: 6px 10px;
-  font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 500;
-  color: #3a3230; outline: none; width: 100%; position: relative; z-index: 2;
+  border: none; background: transparent;
+  padding: 6px 10px; font-family: 'Quicksand', sans-serif;
+  font-size: 13px; font-weight: 500; color: #3a3230; outline: none; width: 100%;
 }
 .daily-input:focus { background: rgba(122,100,88,0.04); }
-.daily-input::placeholder { color: rgba(154,138,128,0.35); font-size: 10px; }
-.personal-check { width: 15px; height: 15px; cursor: pointer; accent-color: #c05050; position: relative; z-index: 2; }
-.row-overlay { position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; }
-.row-overlay.class-full { top: 0; bottom: 0; background: rgba(180,140,110,0.18); }
-.row-overlay.class-top { top: 0; height: 50%; background: rgba(180,140,110,0.18); }
-.row-overlay.class-bottom { bottom: 0; height: 50%; background: rgba(180,140,110,0.18); }
-.row-overlay.transit-top { top: 0; height: 50%; background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.12),rgba(180,160,140,0.12) 3px,transparent 3px,transparent 6px); }
-.row-overlay.transit-bottom { bottom: 0; height: 50%; background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.12),rgba(180,160,140,0.12) 3px,transparent 3px,transparent 6px); }
-.row-overlay.transit-full { top: 0; bottom: 0; background: repeating-linear-gradient(-45deg,rgba(180,160,140,0.08),rgba(180,160,140,0.08) 3px,transparent 3px,transparent 6px); }
+.daily-input::placeholder { color: rgba(154,138,128,0.35); font-size: 10px; font-weight: 400; }
 
-.sidebar-card { background: rgba(255,255,255,0.72); backdrop-filter: blur(12px); border-radius: 14px; border: 1px solid rgba(192,172,158,0.25); padding: 14px; margin-bottom: 14px; }
-.sidebar-title { font-family: 'Gaegu', cursive; font-size: 22px; font-weight: 700; color: #6b5850; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.personal-check {
+  width: 15px; height: 15px; cursor: pointer;
+  accent-color: #c05050;
+  margin: 0; flex-shrink: 0;
+}
+
+.sidebar-card {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(192,172,158,0.25);
+  padding: 14px; margin-bottom: 14px;
+}
+
+.sidebar-title {
+  font-family: 'Gaegu', cursive;
+  font-size: 22px; font-weight: 700;
+  color: #6b5850; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+
 .text-area {
-  width: 100%; border: 1px solid rgba(192,172,158,0.25); border-radius: 10px; padding: 10px 12px;
-  font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 500; color: #3a3230;
-  background: rgba(253,246,240,0.5); resize: vertical; outline: none; min-height: 70px;
+  width: 100%;
+  border: 1px solid rgba(192,172,158,0.25);
+  border-radius: 10px; padding: 10px 12px;
+  font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 500;
+  color: #3a3230; background: rgba(253,246,240,0.5);
+  resize: vertical; outline: none; min-height: 70px;
+  transition: border-color 0.2s;
 }
 .text-area:focus { border-color: rgba(122,100,88,0.4); }
 .text-area.small { min-height: 50px; }
+
+/* ── AI Coach ── */
+.coach-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(248,243,238,0.85));
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(140,120,100,0.2);
+  padding: 14px; margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(92,74,66,0.08);
+}
+.task-entry {
+  display: grid;
+  grid-template-columns: 1fr 60px 50px 50px 28px;
+  gap: 4px; align-items: center;
+  margin-bottom: 6px;
+}
+.task-entry input, .task-entry select {
+  border: 1px solid rgba(192,172,158,0.3);
+  border-radius: 7px; padding: 5px 7px;
+  font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 500;
+  color: #3a3230; background: rgba(253,246,240,0.6);
+  outline: none; transition: border-color 0.2s;
+}
+.task-entry input:focus, .task-entry select:focus { border-color: rgba(122,100,88,0.5); }
+.task-entry input::placeholder { color: rgba(154,138,128,0.4); font-size: 10px; }
+.task-remove {
+  border: none; background: none; color: #c09080; cursor: pointer;
+  font-size: 16px; padding: 0; line-height: 1;
+}
+.task-remove:hover { color: #a05040; }
+.task-labels {
+  display: grid;
+  grid-template-columns: 1fr 60px 50px 50px 28px;
+  gap: 4px; margin-bottom: 4px;
+  font-family: 'Quicksand', sans-serif; font-size: 9px; font-weight: 600;
+  color: #9a8a80; letter-spacing: 0.3px;
+}
+.add-task-btn {
+  display: block; width: 100%; padding: 6px;
+  border: 1px dashed rgba(192,172,158,0.4);
+  background: rgba(255,255,255,0.4); border-radius: 8px;
+  font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 600;
+  color: #9a8a80; cursor: pointer; transition: all 0.2s; margin-top: 4px;
+}
+.add-task-btn:hover { background: rgba(255,255,255,0.7); border-color: #9a8a80; }
+.coach-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 10px;
+  background: linear-gradient(135deg, #5c4a42, #7a6458);
+  color: #fdf6f0; border: none; border-radius: 10px;
+  font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; margin-top: 10px;
+  letter-spacing: 0.5px;
+}
+.coach-btn:hover { background: linear-gradient(135deg, #6b5850, #8a7468); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(92,74,66,0.2); }
+.coach-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+.coach-btn.loading::after {
+  content: ''; width: 14px; height: 14px;
+  border: 2px solid rgba(253,246,240,0.3); border-top-color: #fdf6f0;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.coach-result {
+  margin-top: 12px; padding: 14px;
+  background: linear-gradient(135deg, rgba(93,160,120,0.08), rgba(70,140,100,0.06));
+  border: 1px solid rgba(93,160,120,0.2);
+  border-radius: 12px;
+  font-family: 'Quicksand', sans-serif; font-size: 12.5px;
+  color: #3a3230; line-height: 1.65; white-space: pre-wrap;
+}
+.coach-result h4 {
+  font-family: 'Gaegu', cursive; font-size: 18px; font-weight: 700;
+  color: #4a8a60; margin-bottom: 6px;
+}
+.api-key-setup {
+  text-align: center; padding: 10px;
+  font-family: 'Quicksand', sans-serif; font-size: 11px; color: #9a8a80;
+}
+.api-key-setup input {
+  width: 100%; padding: 7px 10px; margin: 6px 0;
+  border: 1px solid rgba(192,172,158,0.3); border-radius: 8px;
+  font-family: 'Quicksand', sans-serif; font-size: 11px;
+  background: rgba(253,246,240,0.5); outline: none;
+}
+.api-key-setup button {
+  padding: 6px 16px; border: none;
+  background: linear-gradient(135deg, #5c4a42, #7a6458);
+  color: #fdf6f0; border-radius: 8px;
+  font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.api-key-setup button:hover { background: linear-gradient(135deg, #6b5850, #8a7468); }
+.api-key-toggle {
+  border: none; background: none; cursor: pointer;
+  font-size: 11px; color: #9a8a80; font-family: 'Quicksand', sans-serif;
+  text-decoration: underline; padding: 0;
+}
+
 .meal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.meal-label { font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 500; color: #9a8a80; margin-bottom: 4px; }
-.progress-bar-wrap { height: 6px; background: rgba(192,172,158,0.2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
-.progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s, background 0.4s; }
-.date-selector, .month-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 14px; }
-.date-display, .month-title { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 600; color: #5c4a42; }
-.nav-btn { border: none; background: rgba(122,100,88,0.1); color: #6b5850; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.meal-label {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 500; color: #9a8a80; margin-bottom: 4px;
+}
+
+.progress-bar-wrap {
+  height: 6px; background: rgba(192,172,158,0.2);
+  border-radius: 3px; overflow: hidden; margin-top: 8px;
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.date-selector, .month-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; margin-bottom: 14px;
+}
+
+.date-display, .month-title {
+  font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 600; color: #5c4a42;
+}
+
+.nav-btn {
+  border: none; background: rgba(122,100,88,0.1);
+  color: #6b5850; width: 32px; height: 32px;
+  border-radius: 50%; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
 .nav-btn:hover { background: rgba(122,100,88,0.2); }
-.completion-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'Quicksand', sans-serif; font-size: 12px; color: #9a8a80; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; padding: 14px; }
-.cal-header { text-align: center; font-family: 'Quicksand', sans-serif; font-size: 11px; font-weight: 600; color: #9a8a80; padding: 6px 0; }
-.cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; background: rgba(255,255,255,0.4); border: 1px solid rgba(192,172,158,0.1); transition: all 0.2s; }
-.cal-day:hover { background: rgba(255,255,255,0.7); border-color: rgba(122,100,88,0.2); transform: scale(1.04); }
+
+.completion-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px; color: #9a8a80;
+}
+
+.calendar-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 3px; padding: 14px;
+}
+.cal-header {
+  text-align: center; font-family: 'Quicksand', sans-serif;
+  font-size: 11px; font-weight: 600; color: #9a8a80;
+  padding: 6px 0; letter-spacing: 1px;
+}
+.cal-day {
+  aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-radius: 12px; cursor: pointer; transition: all 0.2s;
+  background: rgba(255,255,255,0.4);
+  border: 1px solid rgba(192,172,158,0.1);
+}
+.cal-day:hover {
+  background: rgba(255,255,255,0.7);
+  border-color: rgba(122,100,88,0.2); transform: scale(1.04);
+}
 .cal-day.today { border: 2px solid #7a6458; background: rgba(122,100,88,0.08); }
 .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
 .cal-day.empty:hover { transform: none; }
-.cal-day-num { font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 500; color: #5c4a42; }
+
+.cal-day-num {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px; font-weight: 500; color: #5c4a42;
+}
 .cal-emoji { font-size: 14px; margin-top: 1px; }
+
 .hidden { display: none; }
 </style>
 </head>
 <body>
+
 <div id="sync-banner" class="sync-banner loading">☁️ Firebase 연결 중...</div>
+
 <div class="planner-header">
   <div class="planner-title">⭐ My Planner</div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchView('weekly')">Weekly</button>
-    <button class="nav-tab" onclick="switchView('daily')">Daily</button>
-    <button class="nav-tab" onclick="switchView('monthly')">Monthly</button>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchView('weekly')">Weekly</button>
+      <button class="nav-tab" onclick="switchView('daily')">Daily</button>
+      <button class="nav-tab" onclick="switchView('monthly')">Monthly</button>
+    </div>
   </div>
 </div>
+
 <div class="data-bar">
   <button class="data-btn" onclick="exportData()">📥 Export</button>
   <button class="data-btn" onclick="document.getElementById('import-file').click()">📤 Import</button>
   <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
 </div>
+
 <div class="content-area">
   <div id="view-weekly"></div>
   <div id="view-daily" class="hidden"></div>
   <div id="view-monthly" class="hidden"></div>
 </div>
+
+<!-- Firebase SDK (v9 compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  🔥 여기에 Firebase 설정값을 붙여넣으세요!          ║
+// ╚══════════════════════════════════════════════════════╝
 const firebaseConfig = {
-  apiKey: "AIzaSyCjgbJB0LIqDKCwp11I-0QfzmbMQmT1V_E",
-  authDomain: "myplanner-b1954.firebaseapp.com",
-  projectId: "myplanner-b1954",
-  storageBucket: "myplanner-b1954.firebasestorage.app",
-  messagingSenderId: "989178592123",
-  appId: "1:989178592123:web:63b3b9d77f75674f229bde"
+    apiKey: "AIzaSyCjgbJB0LIqDKCwp11I-0QfzmbMQmT1V_E",
+    authDomain: "myplanner-b1954.firebaseapp.com",
+    projectId: "myplanner-b1954",
+    storageBucket: "myplanner-b1954.firebasestorage.app",
+    messagingSenderId: "989178592123",
+    appId: "1:989178592123:web:63b3b9d77f75674f229bde"
 };
-let db = null, firebaseReady = false;
-const DOC_ID = "planner_main";
-try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); firebaseReady = true; } catch(e) { console.error(e); }
-function showBanner(t, m) { const b = document.getElementById('sync-banner'); b.className='sync-banner '+t; b.textContent=m; if(t==='ok') setTimeout(()=>b.classList.add('hidden'),2500); }
 
+// ── Firebase init ──
+let db = null;
+let firebaseReady = false;
+const DOC_ID = "planner_main"; // Single document for all data
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  firebaseReady = true;
+} catch(e) {
+  console.error("Firebase init failed:", e);
+}
+
+function showBanner(type, msg) {
+  const b = document.getElementById('sync-banner');
+  b.className = 'sync-banner ' + type;
+  b.textContent = msg;
+  if (type === 'ok') setTimeout(() => { b.classList.add('hidden'); }, 2500);
+}
+
+// ── Constants ──
 const DAYS = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
-const HOURS = []; for(let h=8;h<=27;h++) HOURS.push(h);
-const ALL_HALF = []; for(let t=8;t<=27;t+=0.5) ALL_HALF.push(t);
-const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const DEFAULT_SCHEDULE = { MON:"10:30~13:30, 15:00~16:30", TUE:"12:00~16:30", WED:"09:00~12:00, 15:00~16:30", THU:"09:00~12:00, 15:00~16:30", FRI:"13:30~17:00", SAT:"", SUN:"" };
+const DEFAULT_CLASS_SCHEDULE = {
+  MON: [[10.5,13.5],[15,16.5]],
+  TUE: [[12,16.5]],
+  WED: [[9,12],[15,16.5]],
+  THU: [[9,12],[15,16.5]],
+  FRI: [[13.5,17]],
+  SAT: [], SUN: []
+};
 
-// ── Week helpers ──
-function getMonday(d) {
-  const dt = new Date(d); const day = dt.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  dt.setDate(dt.getDate() + diff); dt.setHours(0,0,0,0); return dt;
-}
-function getWeekDates(mondayDate) {
-  const dates = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(mondayDate); d.setDate(d.getDate() + i);
-    dates.push(d);
-  }
-  return dates;
-}
-function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function fmtShort(d) { return `${d.getMonth()+1}/${d.getDate()}`; }
-
-// ── Schedule ──
-function parseSchedule(str) {
-  if (!str || !str.trim()) return [];
-  return str.split(',').map(s => {
-    const m = s.trim().match(/(\d{1,2}):(\d{2})\s*[~\-]\s*(\d{1,2}):(\d{2})/);
-    if (!m) return null;
-    return [parseInt(m[1])+parseInt(m[2])/60, parseInt(m[3])+parseInt(m[4])/60];
-  }).filter(Boolean);
-}
 function getClassSchedule() {
-  const s = state.classSchedule || {};
-  const r = {}; DAYS.forEach(d => { r[d] = parseSchedule(s[d] || DEFAULT_SCHEDULE[d] || ''); }); return r;
-}
-function formatTime(t) {
-  const h = t >= 24 ? t-24 : t;
-  const hour = h > 12 ? h-12 : (h===0?12:h);
-  return `${Math.floor(hour)}:00 ${(h>=12&&h<24)?'PM':'AM'}`;
+  // Use Firebase-stored schedule if available, else default
+  if (state.classSchedule && Object.keys(state.classSchedule).length > 0) {
+    const parsed = {};
+    DAYS.forEach(d => {
+      const str = state.classSchedule[d] || '';
+      if (!str.trim()) { parsed[d] = []; return; }
+      parsed[d] = str.split(',').map(range => {
+        const parts = range.trim().split('~');
+        if (parts.length !== 2) return null;
+        const toNum = s => { const [h,m] = s.trim().split(':').map(Number); return h + (m >= 30 ? 0.5 : 0); };
+        return [toNum(parts[0]), toNum(parts[1])];
+      }).filter(Boolean);
+    });
+    return parsed;
+  }
+  return DEFAULT_CLASS_SCHEDULE;
 }
 
-// ── Cell overlays ──
-function getCellOverlays(classRanges, hourStart) {
-  function halfStatus(hs, he) {
-    for (const [s,e] of classRanges) { if (hs < e && he > s) return 'class'; }
-    for (const [s,e] of classRanges) {
-      if (hs >= s-0.5 && he <= s && hs < s) return 'transit';
-      if (hs >= e && he <= e+0.5 && he > e) return 'transit';
-    }
-    return 'free';
-  }
-  const ts = halfStatus(hourStart, hourStart+0.5);
-  const bs = halfStatus(hourStart+0.5, hourStart+1);
-  const ov = [];
-  if (ts===bs && ts!=='free') ov.push({half:'full',type:ts});
-  else { if(ts!=='free') ov.push({half:'top',type:ts}); if(bs!=='free') ov.push({half:'bottom',type:bs}); }
-  return ov;
+// Alias for backward compat
+const CLASS_SCHEDULE = DEFAULT_CLASS_SCHEDULE;
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function formatTime(t) {
+  const h = t >= 24 ? t - 24 : t;
+  const hour = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+  const min = (t % 1 === 0.5) ? ':30' : ':00';
+  const ampm = (h >= 12 && h < 24) ? 'PM' : 'AM';
+  return `${Math.floor(hour)}${min} ${ampm}`;
 }
-function isHourBlocked(cr, h) { const o=getCellOverlays(cr,h); return o.length===1&&o[0].half==='full'&&o[0].type==='class'; }
-function overlayHtml(ov, pre) { return ov.map(o=>`<div class="${pre} ${o.type}-${o.half}"></div>`).join(''); }
+
+function isClassTime(day, t) { const sched = getClassSchedule(); return (sched[day]||[]).some(([s,e]) => t >= s && t < e); }
+function isTransitTime(day, t) {
+  if (isClassTime(day, t)) return false;
+  const sched = getClassSchedule();
+  return (sched[day]||[]).some(([s,e]) => (t >= s-0.5 && t < s) || (t >= e && t < e+0.5));
+}
+
+function buildDaySlots(day) {
+  const classSet = new Set(), transitSet = new Set();
+  for (let t = 8; t <= 27; t += 0.5) {
+    if (isClassTime(day, t)) classSet.add(t);
+    else if (isTransitTime(day, t)) transitSet.add(t);
+  }
+  const slots = [];
+  let t = 8;
+  while (t <= 27) {
+    if (classSet.has(t)) { slots.push({ value: t, type: 'class' }); t += 0.5; }
+    else if (transitSet.has(t)) { slots.push({ value: t, type: 'transit' }); t += 0.5; }
+    else {
+      const next = t + 0.5;
+      if (next <= 27 && !classSet.has(next) && !transitSet.has(next)) {
+        slots.push({ value: t, type: 'free', dur: 1 }); t += 1;
+      } else {
+        slots.push({ value: t, type: 'free', dur: 0.5 }); t += 0.5;
+      }
+    }
+  }
+  return slots;
+}
+
+const ALL_HALF = [];
+for (let t = 8; t <= 27; t += 0.5) ALL_HALF.push(t);
 
 // ── State ──
-function defaultState() { return { dailyTimeline:{}, dailyTasks:{}, dailyMeals:{}, dailyExercise:{}, dailyPersonal:{}, classSchedule:{}, scheduleHistory:{}, weeklyNotes:{} }; }
+function defaultState() { return { weeklyNotes:{}, dailyTimeline:{}, dailyTasks:{}, dailyMeals:{}, dailyExercise:{}, dailyPersonal:{}, dailyTodoItems:{}, dailyCoaching:{}, classSchedule:{} }; }
+
 let state = defaultState();
 let currentView = "weekly";
-let selectedDate = (()=>{ const n=new Date(); return {year:n.getFullYear(),month:n.getMonth(),day:n.getDate()}; })();
-let currentMonth = {year:selectedDate.year,month:selectedDate.month};
-let currentWeekMonday = getMonday(new Date());
-let scheduleEditorOpen = false;
+let dailySubTab = "timeline"; // "timeline" | "coach" | "notes"
+let selectedDate = (() => { const n = new Date(); return { year: n.getFullYear(), month: n.getMonth(), day: n.getDate() }; })();
+let currentMonth = { year: selectedDate.year, month: selectedDate.month };
 
-// ── Firebase ──
+// ── Firebase Save / Load ──
 let saveTimer = null;
 function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveToFirebase, 800); }
+
 async function saveToFirebase() {
-  if(!firebaseReady||!db) return;
-  try { await db.collection("planners").doc(DOC_ID).set(state); showBanner('ok','☁️ 저장 완료!'); }
-  catch(e) { showBanner('err','⚠️ 저장 실패 — '+e.message); }
+  if (!firebaseReady || !db) return;
+  try {
+    await db.collection("planners").doc(DOC_ID).set(state);
+    showBanner('ok', '☁️ 저장 완료!');
+  } catch(e) {
+    console.error("Save failed:", e);
+    showBanner('err', '⚠️ 저장 실패 — ' + e.message);
+  }
 }
-async function getFlashcardLog(ds) {
-  if(!firebaseReady||!db) return null;
-  try { const d=await db.collection("flashcard").doc("flashcard_log").get(); if(d.exists&&d.data().log&&d.data().log[ds]) return d.data().log[ds]; return null; } catch{return null;}
-}
-let unsubscribe=null;
+
+let unsubscribe = null;
+
 async function loadFromFirebase() {
-  if(!firebaseReady||!db){showBanner('err','⚠️ Firebase 연결 실패');return;}
-  showBanner('loading','☁️ 데이터 불러오는 중...');
-  unsubscribe=db.collection("planners").doc(DOC_ID).onSnapshot((doc)=>{
-    if(doc.exists){const d=doc.data();if(!document.activeElement||document.activeElement.tagName==='BODY'){state={...defaultState(),...d};renderCurrentView();showBanner('ok','🔄 실시간 동기화됨!');}else{state={...defaultState(),...d};}}
-    else{showBanner('ok','☁️ 연결 완료!');}
-  },(err)=>{showBanner('err','⚠️ '+err.message);});
-}
+  if (!firebaseReady || !db) {
+    showBanner('err', '⚠️ Firebase 연결 실패 — 설정값을 확인하세요');
+    return;
+  }
+  try {
+    showBanner('loading', '☁️ 데이터 불러오는 중...');
 
+    // 실시간 리스너: 다른 기기에서 변경하면 자동 반영
+    unsubscribe = db.collection("planners").doc(DOC_ID).onSnapshot((doc) => {
+      if (doc.exists) {
+        const newData = doc.data();
+        // 현재 입력 중이 아닐 때만 업데이트 (충돌 방지)
+        if (!document.activeElement || document.activeElement.tagName === 'BODY') {
+          state = { ...defaultState(), ...newData };
+          renderCurrentView();
+          showBanner('ok', '🔄 실시간 동기화됨!');
+        } else {
+          // 입력 중이면 state만 조용히 업데이트 (화면은 안 건드림)
+          state = { ...defaultState(), ...newData };
+        }
+      } else {
+        showBanner('ok', '☁️ 연결 완료! 새 플래너를 시작합니다.');
+      }
+    }, (error) => {
+      console.error("Realtime sync error:", error);
+      showBanner('err', '⚠️ 실시간 동기화 오류 — ' + error.message);
+    });
+
+  } catch(e) {
+    console.error("Load failed:", e);
+    showBanner('err', '⚠️ 불러오기 실패 — ' + e.message);
+  }
+}
+// ── Export / Import (backup) ──
 function exportData() {
-  const b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b);
-  const n=new Date(); a.download=`planner_${n.getFullYear()}${String(n.getMonth()+1).padStart(2,'0')}${String(n.getDate()).padStart(2,'0')}.json`; a.click();
-}
-function importData(ev) {
-  const f=ev.target.files[0]; if(!f)return;
-  const r=new FileReader(); r.onload=(e)=>{try{state={...defaultState(),...JSON.parse(e.target.result)};debouncedSave();renderCurrentView();alert('✅ 불러왔습니다!');}catch{alert('❌ 파일 오류');}};
-  r.readAsText(f); ev.target.value='';
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const now = new Date();
+  a.download = `planner_backup_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
-function dateKey(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
-function getDaysInMonth(y,m){return new Date(y,m+1,0).getDate();}
-function getFirstDay(y,m){const d=new Date(y,m,1).getDay();return d===0?6:d-1;}
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      state = { ...defaultState(), ...imported };
+      debouncedSave();
+      renderCurrentView();
+      alert('✅ 데이터를 불러왔습니다!');
+    } catch { alert('❌ 파일 형식이 올바르지 않습니다.'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ── Helpers ──
+function dateKey(y,m,d) { return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function getDaysInMonth(y,m) { return new Date(y,m+1,0).getDate(); }
+function getFirstDay(y,m) { const d = new Date(y,m,1).getDay(); return d===0?6:d-1; }
 
 function getCompletion(dk) {
-  const tl=state.dailyTimeline[dk]||{}, pe=state.dailyPersonal[dk]||{};
-  const p=dk.split('-'), dow=new Date(+p[0],+p[1]-1,+p[2]).getDay();
-  const dn=["SUN","MON","TUE","WED","THU","FRI","SAT"][dow];
-  const cr=getClassSchedule()[dn]||[];
-  let fillable=0,filled=0;
-  ALL_HALF.forEach(t=>{
-    const isC=cr.some(([s,e])=>t>=s&&t<e);
-    const isT=!isC&&cr.some(([s,e])=>(t>=s-0.5&&t<s)||(t>=e&&t<e+0.5));
-    if(isC||isT)return; if(pe[t])return;
-    fillable++; if(tl[t]&&tl[t].trim())filled++;
+  const tl = state.dailyTimeline[dk] || {};
+  const pe = state.dailyPersonal[dk] || {};
+  const parts = dk.split('-');
+  const dow = new Date(+parts[0], +parts[1]-1, +parts[2]).getDay();
+  const dayName = ["SUN","MON","TUE","WED","THU","FRI","SAT"][dow];
+  let fillable = 0, filled = 0;
+  ALL_HALF.forEach(t => {
+    if (isClassTime(dayName, t) || isTransitTime(dayName, t)) return;
+    if (pe[t]) return;
+    fillable++;
+    if (tl[t] && tl[t].trim()) filled++;
   });
-  return fillable>0?filled/fillable:0;
+  return fillable > 0 ? filled / fillable : 0;
 }
 
-function getEmoji(p){return p>=80?'🤩':p>=65?'😊':p>=50?'🙂':p>=35?'😦':p>=20?'😴':'😈';}
-function getBarColor(p){return p>=80?'linear-gradient(90deg,#6dbb5a,#4da03a)':p>=65?'linear-gradient(90deg,#8ab06a,#6d9a50)':p>=50?'linear-gradient(90deg,#a8c060,#8aaa45)':p>=35?'linear-gradient(90deg,#c4a55a,#b09040)':p>=20?'linear-gradient(90deg,#c08070,#a06050)':'linear-gradient(90deg,#9a7090,#805080)';}
-function getCalEmoji(c){return c>=0.8?'🤩':c>=0.65?'😊':c>=0.5?'🙂':c>=0.35?'😦':c>=0.2?'😴':c>0?'😈':'';}
+function getEmoji(pct) {
+  return pct >= 80 ? '🤩' : pct >= 65 ? '😊' : pct >= 50 ? '🙂' : pct >= 35 ? '😦' : pct >= 20 ? '😴' : '😈';
+}
+function getBarColor(pct) {
+  return pct >= 80 ? 'linear-gradient(90deg,#6dbb5a,#4da03a)'
+    : pct >= 65 ? 'linear-gradient(90deg,#8ab06a,#6d9a50)'
+    : pct >= 50 ? 'linear-gradient(90deg,#a8c060,#8aaa45)'
+    : pct >= 35 ? 'linear-gradient(90deg,#c4a55a,#b09040)'
+    : pct >= 20 ? 'linear-gradient(90deg,#c08070,#a06050)'
+    : 'linear-gradient(90deg,#9a7090,#805080)';
+}
+function getCalEmoji(comp) {
+  return comp >= 0.8 ? '🤩' : comp >= 0.65 ? '😊' : comp >= 0.5 ? '🙂' : comp >= 0.35 ? '😦' : comp >= 0.2 ? '😴' : comp > 0 ? '😈' : '';
+}
 
-function renderCurrentView(){if(currentView==='weekly')renderWeekly();else if(currentView==='daily')renderDaily();else renderMonthly();}
-function switchView(v){
-  currentView=v;
-  document.querySelectorAll('.nav-tab').forEach((b,i)=>b.classList.toggle('active',["weekly","daily","monthly"][i]===v));
-  ['weekly','daily','monthly'].forEach(id=>document.getElementById('view-'+id).classList.toggle('hidden',id!==v));
+// ── API Key Management (stored in Firebase) ──
+let apiKey = '';
+async function loadApiKey() {
+  if (!firebaseReady || !db) return;
+  try {
+    const doc = await db.collection("planners").doc("settings").get();
+    if (doc.exists && doc.data().apiKey) {
+      apiKey = doc.data().apiKey;
+    }
+  } catch(e) { console.log("No API key stored yet"); }
+}
+async function saveApiKey(key) {
+  apiKey = key;
+  if (!firebaseReady || !db) return;
+  try {
+    await db.collection("planners").doc("settings").set({ apiKey: key }, { merge: true });
+  } catch(e) { console.error("API key save failed:", e); }
+}
+
+function setupApiKey() {
+  const input = document.getElementById('api-key-input');
+  if (!input || !input.value.trim()) return;
+  saveApiKey(input.value.trim());
+  renderDaily();
+}
+
+// ── Todo Item Management ──
+function getTodoItems(dk) {
+  return state.dailyTodoItems[dk] || [];
+}
+
+function addTodoItem(dk) {
+  if (!state.dailyTodoItems[dk]) state.dailyTodoItems[dk] = [];
+  state.dailyTodoItems[dk].push({ name: '', hours: 1, difficulty: '중', type: '공부' });
+  debouncedSave();
+  renderDaily();
+}
+
+function removeTodoItem(dk, idx) {
+  if (!state.dailyTodoItems[dk]) return;
+  state.dailyTodoItems[dk].splice(idx, 1);
+  debouncedSave();
+  renderDaily();
+}
+
+function updateTodoItem(dk, idx, field, value) {
+  if (!state.dailyTodoItems[dk] || !state.dailyTodoItems[dk][idx]) return;
+  state.dailyTodoItems[dk][idx][field] = field === 'hours' ? parseFloat(value) || 0.5 : value;
+  debouncedSave();
+}
+
+// ── AI Coaching ──
+async function requestCoaching(dk) {
+  if (!apiKey) { alert('API 키를 먼저 설정해주세요!'); return; }
+  const items = getTodoItems(dk);
+  if (items.length === 0 || items.every(i => !i.name.trim())) {
+    alert('할 일을 먼저 입력해주세요!'); return;
+  }
+
+  const btn = document.getElementById('coach-btn');
+  const resultDiv = document.getElementById('coach-result');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.innerHTML = '🤖 코칭 생성 중...';
+  resultDiv.innerHTML = '';
+
+  // Gather context
+  const parts = dk.split('-');
+  const dow = new Date(+parts[0], +parts[1]-1, +parts[2]).getDay();
+  const dayName = ["SUN","MON","TUE","WED","THU","FRI","SAT"][dow];
+  const dayLabel = ["일","월","화","수","목","금","토"][dow];
+
+  // Calculate free time
+  let classHours = 0, transitHours = 0;
+  for (let t = 8; t <= 27; t += 0.5) {
+    if (isClassTime(dayName, t)) classHours += 0.5;
+    else if (isTransitTime(dayName, t)) transitHours += 0.5;
+  }
+  const personalSlots = state.dailyPersonal[dk] || {};
+  const personalHours = Object.keys(personalSlots).filter(k => personalSlots[k]).length * 0.5;
+  const totalHours = 20; // 8AM ~ 4AM(28)
+  const freeHours = totalHours - classHours - transitHours - personalHours;
+
+  // Class schedule description
+  const classRanges = (getClassSchedule()[dayName] || []).map(([s,e]) => {
+    return `${formatTime(s)}~${formatTime(e)}`;
+  }).join(', ');
+
+  // Task list
+  const taskList = items.filter(i => i.name.trim()).map((item, idx) => {
+    return `${idx+1}. ${item.name} (${item.hours}시간, 난이도: ${item.difficulty}, ${item.type})`;
+  }).join('\n');
+
+  const totalTaskHours = items.filter(i => i.name.trim()).reduce((s,i) => s + i.hours, 0);
+
+  // Yesterday's completion
+  const yesterday = new Date(+parts[0], +parts[1]-1, +parts[2] - 1);
+  const ydK = dateKey(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+  const ydComp = Math.round(getCompletion(ydK) * 100);
+
+  // Flashcard status (check from daily timeline or state)
+  // Build the prompt
+  const prompt = `당신은 한국 법학대학원생의 개인 학습코치이자 따뜻한 멘토입니다.
+마치 오랜 친구에게 편지를 쓰듯, 다정하고 친밀한 말투(반말)로 이야기해주세요.
+딱딱한 보고서가 아니라, 옆에 앉아서 같이 계획을 짜주는 느낌으로요.
+
+## 학생 정보
+- 법학대학원생, 2028년 1월 3일 변호사시험 준비 중
+- 과목: 특별형법, 형사소송법, 행정법총론, 민사소송법, 상법
+
+## ${parts[0]}년 ${parts[1]}월 ${parts[2]}일 (${dayLabel}요일) 정보
+- 수업 시간: ${classRanges || '없음'} (${classHours}시간)
+- 이동 시간: ${transitHours}시간
+- 개인 스케줄: ${personalHours}시간
+- 가용 시간: 약 ${freeHours}시간 (8AM~4AM 기준)
+- 어제 달성률: ${ydComp}%
+
+## 내일 할 일 목록
+${taskList}
+
+총 필요 시간: ${totalTaskHours}시간 / 가용 시간: ${freeHours}시간
+
+## 요청 (아래 순서대로, 각 섹션에 이모지 헤더를 붙여줘)
+1. 📋 추천 스케줄: 위 할 일들을 가용 시간대에 배치해줘
+   - 수업 시간(${classRanges || '없음'})은 절대 겹치지 않게
+   - 난이도 높은 것 → 오전 집중 시간대
+   - 2시간 연속 공부 후 10~15분 휴식
+   - 공부/비공부를 적절히 섞어줘
+2. 📊 워크로드 체크: 무리 없는지, 현실적인지 솔직하게 알려줘
+3. 💡 오늘의 학습 팁: 오늘 할 일에 맞는 구체적인 학습 전략 1~2가지
+4. 🧘 마음 다스리기: 응원의 말 대신, 아래 중 하나를 골라서 구체적으로 안내해줘:
+   - 1~3분짜리 짧은 마음챙김 명상법 (호흡법, 바디스캔 등)
+   - 시험 불안을 다스리는 구체적인 심리 기법 (인지 재구성, 그라운딩 등)
+   - 집중력 회복을 위한 짧은 루틴 (스트레칭, 감각 집중 등)
+   매번 다른 기법을 소개해줘. "화이팅!" 같은 뻔한 응원이 아니라, 실제로 따라할 수 있는 구체적 가이드를 줘.
+
+전체적으로 다정하고 편한 말투로, 이모지를 적절히 써서 보기 좋게 작성해줘.
+"~야", "~거든", "~해봐" 같은 친근한 어미를 사용해줘.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20241022',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `API 오류 (${response.status})`);
+    }
+
+    const data = await response.json();
+    const text = data.content[0].text;
+
+    // Save coaching result
+    if (!state.dailyCoaching) state.dailyCoaching = {};
+    state.dailyCoaching[dk] = { text, timestamp: new Date().toISOString() };
+    debouncedSave();
+
+    resultDiv.innerHTML = `<h4>🤖 AI 학습코치</h4>${formatCoachingText(text)}`;
+  } catch(e) {
+    console.error('Coaching error:', e);
+    resultDiv.innerHTML = `<div style="color:#a05040;font-size:12px;">❌ 코칭 생성 실패: ${escHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.innerHTML = '🤖 AI 코칭 받기';
+  }
+}
+
+function formatCoachingText(text) {
+  // Simple markdown-like formatting
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^### (.+)$/gm, '<div style="font-weight:700;color:#5c4a42;margin:10px 0 4px;font-size:13px;">$1</div>')
+    .replace(/^## (.+)$/gm, '<div style="font-weight:700;color:#5c4a42;margin:12px 0 4px;font-size:14px;">$1</div>')
+    .replace(/^- /gm, '• ')
+    .replace(/\n/g, '<br>');
+}
+
+function switchDailyTab(tab) {
+  dailySubTab = tab;
+  document.querySelectorAll('.daily-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.daily-tab').forEach(t => t.classList.remove('active'));
+  const panel = document.getElementById('dp-' + tab);
+  if (panel) panel.classList.add('active');
+  const tabBtn = document.querySelector(`.daily-tab[data-tab="${tab}"]`);
+  if (tabBtn) tabBtn.classList.add('active');
+}
+
+function renderCurrentView() {
+  if (currentView === 'weekly') renderWeekly();
+  else if (currentView === 'daily') renderDaily();
+  else renderMonthly();
+}
+
+function switchView(v) {
+  currentView = v;
+  document.querySelectorAll('.nav-tab').forEach((btn,i) => {
+    btn.classList.toggle('active', ["weekly","daily","monthly"][i] === v);
+  });
+  document.getElementById('view-weekly').classList.toggle('hidden', v !== 'weekly');
+  document.getElementById('view-daily').classList.toggle('hidden', v !== 'daily');
+  document.getElementById('view-monthly').classList.toggle('hidden', v !== 'monthly');
   renderCurrentView();
 }
 
 // ── WEEKLY ──
+function getWeeklyCellType(day, hourStart) {
+  const h1Class = isClassTime(day, hourStart);
+  const h2Class = isClassTime(day, hourStart + 0.5);
+  const h1Transit = isTransitTime(day, hourStart);
+  const h2Transit = isTransitTime(day, hourStart + 0.5);
+  const hasClass = h1Class || h2Class;
+  const hasTransit = h1Transit || h2Transit;
+  if (hasClass && hasTransit) { return h1Transit ? 'class-transit-top' : 'class-transit-bottom'; }
+  if (hasClass) return 'class';
+  if (h1Transit && h2Transit) return 'transit';
+  if (h1Transit) return 'transit-top';
+  if (h2Transit) return 'transit-bottom';
+  return 'free';
+}
+
 function renderWeekly() {
-  const weekDates = getWeekDates(currentWeekMonday);
-  const today = new Date(); today.setHours(0,0,0,0);
-  const cs = getClassSchedule();
-  const schedRaw = state.classSchedule || {};
-  const weekLabel = `${fmtShort(weekDates[0])} — ${fmtShort(weekDates[6])}`;
+  const todayIdx = (() => { const d = new Date().getDay(); return d===0?6:d-1; })();
+  const hourRows = [];
+  for (let h = 8; h <= 27; h++) hourRows.push(h);
 
-  // Schedule editor
-  let editorHtml = `<div class="schedule-editor">
-    <div class="schedule-editor-title" onclick="scheduleEditorOpen=!scheduleEditorOpen;renderWeekly()">
-      ⚙️ Class Time Settings ${scheduleEditorOpen?'▲':'▼'}
-    </div>`;
-  if (scheduleEditorOpen) {
-    const history = state.scheduleHistory || [];
-    editorHtml += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-      <input type="checkbox" id="sched-copy-last" style="accent-color:#6b5850;width:15px;height:15px;cursor:pointer;" onchange="copyLastWeekSchedule(this.checked)">
-      <label for="sched-copy-last" style="font-family:'Quicksand',sans-serif;font-size:12px;font-weight:500;color:#6b5850;cursor:pointer;">📋 지난주와 동일하게 입력</label>
-    </div>`;
-    DAYS.forEach(d => {
-      const val = schedRaw[d] !== undefined ? schedRaw[d] : (DEFAULT_SCHEDULE[d]||'');
-      editorHtml += `<div class="schedule-row"><span class="schedule-day-label">${d}</span>
-        <input class="schedule-input" id="sched-${d}" value="${escHtml(val)}" placeholder="09:00~12:00, 14:00~16:30"></div>`;
-    });
-    editorHtml += `<button class="schedule-save-btn" onclick="saveSchedule()">💾 저장 및 적용</button>`;
-  }
-  editorHtml += `</div>`;
-
-  let html = `<div class="section-label">⭐ Weekly Schedule</div>
-    <div class="week-nav">
-      <button class="nav-btn" onclick="shiftWeek(-1)">‹</button>
-      <div class="week-title">${weekLabel}</div>
-      <button class="nav-btn" onclick="shiftWeek(1)">›</button>
-      <button class="week-today-btn" onclick="goThisWeek()">Today</button>
-    </div>
-    ${editorHtml}
+  let html = `
+    <div class="section-label">⭐ Weekly Schedule</div>
     <div class="legend">
       <div class="legend-item"><div class="legend-swatch" style="background:rgba(180,140,110,0.22)"></div><span>수업</span></div>
       <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(-45deg,rgba(180,160,140,0.15),rgba(180,160,140,0.15) 3px,transparent 3px,transparent 6px)"></div><span>이동</span></div>
       <div class="legend-item"><div class="legend-swatch" style="background:rgba(255,255,255,0.6)"></div><span>자유 시간</span></div>
     </div>
-    <div class="card" style="overflow-x:auto"><div class="weekly-grid" style="min-width:780px">
-      <div class="grid-header time-col">TIME</div>`;
+    <div class="card" style="overflow-x:auto">
+      <div class="weekly-grid" style="min-width:780px">
+        <div class="grid-header time-col">TIME</div>`;
 
-  weekDates.forEach((d, i) => {
-    const isToday = d.getTime() === today.getTime();
-    html += `<div class="grid-header ${isToday?'today-col':''}" style="cursor:pointer" onclick="goToDay(${d.getFullYear()},${d.getMonth()},${d.getDate()})">
-      ${DAYS[i]}<div class="header-date">${fmtShort(d)}</div>
-    </div>`;
+  DAYS.forEach((d,i) => {
+    const bg = i === todayIdx ? 'background:linear-gradient(180deg,#8b6f5e,#7a5e4e)' : '';
+    html += `<div class="grid-header" style="${bg}">${d}</div>`;
   });
 
-  HOURS.forEach(h => {
+  hourRows.forEach(h => {
     html += `<div class="time-cell">${formatTime(h)}</div>`;
-    weekDates.forEach((d, i) => {
-      const dk = fmtDate(d);
-      const dayName = DAYS[i];
-      const classRanges = cs[dayName] || [];
-      const overlays = getCellOverlays(classRanges, h);
-      const blocked = isHourBlocked(classRanges, h);
-      const val = (state.dailyTimeline[dk] || {})[h] || '';
-      const ph = overlays.some(o=>o.type==='class') ? '수업' : '';
-
-      html += `<div class="schedule-cell">${overlayHtml(overlays,'cell-overlay')}`;
-      if (!blocked) {
-        html += `<input class="cell-input" value="${escHtml(val)}" placeholder="${ph}"
-          oninput="writeTimeline('${dk}',${h},this.value)">`;
+    DAYS.forEach(day => {
+      const type = getWeeklyCellType(day, h);
+      const key = `${day}-${h}`;
+      const val = state.weeklyNotes[key] || '';
+      if (type === 'transit') {
+        html += `<div class="schedule-cell transit"></div>`;
+      } else if (type === 'class') {
+        html += `<div class="schedule-cell class-time">
+          <input class="cell-input" value="${escHtml(val)}" placeholder="수업"
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
+      } else if (type === 'class-transit-top' || type === 'class-transit-bottom') {
+        html += `<div class="schedule-cell ${type}">
+          <input class="cell-input" value="${escHtml(val)}" placeholder="수업"
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
+      } else if (type === 'transit-top' || type === 'transit-bottom') {
+        html += `<div class="schedule-cell ${type}">
+          <input class="cell-input" value="${escHtml(val)}" placeholder=""
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
+      } else {
+        html += `<div class="schedule-cell">
+          <input class="cell-input" value="${escHtml(val)}" placeholder=""
+            oninput="state.weeklyNotes['${key}']=this.value;debouncedSave()">
+        </div>`;
       }
-      html += `</div>`;
     });
   });
+
   html += `</div></div>`;
   document.getElementById('view-weekly').innerHTML = html;
 }
 
-function writeTimeline(dk, h, val) {
-  if (!state.dailyTimeline[dk]) state.dailyTimeline[dk] = {};
-  state.dailyTimeline[dk][h] = val;
-  state.dailyTimeline[dk][h + 0.5] = val; // fill both half-hours
-  debouncedSave();
-}
-
-function shiftWeek(delta) {
-  currentWeekMonday = new Date(currentWeekMonday);
-  currentWeekMonday.setDate(currentWeekMonday.getDate() + delta * 7);
-  renderWeekly();
-}
-function goThisWeek() { currentWeekMonday = getMonday(new Date()); renderWeekly(); }
-
-function copyLastWeekSchedule(checked) {
-  const history = state.scheduleHistory || [];
-  const last = history.length > 0 ? history[history.length-1] : null;
-  DAYS.forEach(d => {
-    const input = document.getElementById('sched-'+d); if(!input) return;
-    if (checked && last && last.schedule && last.schedule[d] !== undefined) { input.value = last.schedule[d]; }
-    else { const sr = state.classSchedule||{}; input.value = sr[d]!==undefined ? sr[d] : (DEFAULT_SCHEDULE[d]||''); }
-  });
-}
-function saveSchedule() {
-  if(!state.classSchedule) state.classSchedule={};
-  if(!state.scheduleHistory) state.scheduleHistory=[];
-  const old={}; DAYS.forEach(d=>{old[d]=state.classSchedule[d]||DEFAULT_SCHEDULE[d]||'';});
-  if(DAYS.some(d=>old[d])){
-    const now=new Date();
-    state.scheduleHistory.push({date:fmtDate(now),schedule:{...old}});
-    if(state.scheduleHistory.length>10) state.scheduleHistory=state.scheduleHistory.slice(-10);
+// ── Personal event toggle ──
+function togglePersonal(dk, slotValue, dur) {
+  if (!state.dailyPersonal[dk]) state.dailyPersonal[dk] = {};
+  const pe = state.dailyPersonal[dk];
+  const isOn = !!pe[slotValue];
+  if (isOn) {
+    delete pe[slotValue];
+    if (dur === 1) delete pe[slotValue + 0.5];
+  } else {
+    pe[slotValue] = true;
+    if (dur === 1) pe[slotValue + 0.5] = true;
   }
-  DAYS.forEach(d=>{const i=document.getElementById('sched-'+d);if(i)state.classSchedule[d]=i.value;});
-  debouncedSave(); renderWeekly(); alert('✅ 수업 시간이 저장되었습니다!');
+  debouncedSave();
+  renderDaily();
 }
 
-// ── Personal ──
-function togglePersonal(dk, h) {
-  if(!state.dailyPersonal[dk]) state.dailyPersonal[dk]={};
-  const pe=state.dailyPersonal[dk];
-  if(pe[h]){delete pe[h];delete pe[h+0.5];}else{pe[h]=true;pe[h+0.5]=true;}
-  debouncedSave(); renderDaily();
-}
-
-// ── DAILY ──
+// ── DAILY (Tab-based layout) ──
 function renderDaily() {
-  const dk=dateKey(selectedDate.year,selectedDate.month,selectedDate.day);
-  const comp=getCompletion(dk), pct=Math.round(comp*100);
-  const dow=new Date(selectedDate.year,selectedDate.month,selectedDate.day).getDay();
-  const dayName=["SUN","MON","TUE","WED","THU","FRI","SAT"][dow];
-  const cs=getClassSchedule(), classRanges=cs[dayName]||[];
-  const tasks=state.dailyTasks[dk]||'', meals=state.dailyMeals[dk]||{}, exercise=state.dailyExercise[dk]||'';
+  const dk = dateKey(selectedDate.year, selectedDate.month, selectedDate.day);
+  const comp = getCompletion(dk);
+  const pct = Math.round(comp * 100);
+  const dow = new Date(selectedDate.year, selectedDate.month, selectedDate.day).getDay();
+  const dayName = ["SUN","MON","TUE","WED","THU","FRI","SAT"][dow];
+  const daySlots = buildDaySlots(dayName);
 
-  const targetDate=new Date(2028,0,3),currentDate=new Date(selectedDate.year,selectedDate.month,selectedDate.day);
-  const diffDays=Math.ceil((targetDate-currentDate)/86400000);
-  const ddayText=diffDays>0?`D-${diffDays}`:diffDays===0?'D-Day 🎉':`D+${Math.abs(diffDays)}`;
+  const tasks = state.dailyTasks[dk] || '';
+  const meals = state.dailyMeals[dk] || {};
+  const exercise = state.dailyExercise[dk] || '';
 
-  let html=`<div class="date-selector">
+  // D-day
+  const targetDate = new Date(2028, 0, 3);
+  const currentDate = new Date(selectedDate.year, selectedDate.month, selectedDate.day);
+  const diffTime = targetDate.getTime() - currentDate.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const ddayText = diffDays > 0 ? `D-${diffDays}` : diffDays === 0 ? 'D-Day 🎉' : `D+${Math.abs(diffDays)}`;
+
+  let html = `
+    <div class="date-selector">
       <button class="nav-btn" onclick="shiftDate(-1)">‹</button>
       <div class="date-display">${selectedDate.year}. ${selectedDate.month+1}. ${selectedDate.day} (${dayName})</div>
       <button class="nav-btn" onclick="shiftDate(1)">›</button>
     </div>
     <div style="text-align:center;margin-bottom:14px">
-      <div style="display:inline-block;background:linear-gradient(135deg,#5c4a42,#7a6458);color:#fdf6f0;padding:4px 14px;border-radius:20px;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:700;margin-bottom:6px;">📅 ${ddayText}</div>
-      <div class="completion-badge">달성률 ${pct}% ${getEmoji(pct)}</div>
-      <div class="progress-bar-wrap" style="max-width:240px;margin:4px auto 0"><div class="progress-bar-fill" style="width:${pct}%;background:${getBarColor(pct)}"></div></div>
-    </div>
-    <div class="daily-layout"><div>
-      <div class="section-label">⏰ Timeline</div>
-      <div class="legend" style="margin-bottom:8px;">
-        <div class="legend-item"><div class="legend-swatch" style="background:rgba(180,140,110,0.22)"></div><span>수업</span></div>
-        <div class="legend-item"><div class="legend-swatch" style="background:rgba(200,80,70,0.20)"></div><span>개인 스케줄</span></div>
-        <div class="legend-item"><span style="font-size:13px">☑️</span><span>체크 → 달성률 제외</span></div>
-      </div><div class="card">`;
-
-  HOURS.forEach(h=>{
-    const overlays=getCellOverlays(classRanges,h), blocked=isHourBlocked(classRanges,h);
-    const pe=state.dailyPersonal[dk]||{}, isP=!!pe[h];
-    const val=(state.dailyTimeline[dk]||{})[h]||'';
-    const rc=isP?'daily-time-row personal-block':'daily-time-row';
-
-    html+=`<div class="${rc}">${overlayHtml(overlays,'row-overlay')}
-      <div class="daily-time-label">${formatTime(h)}</div>`;
-    if(blocked){
-      html+=`<div></div><input class="daily-input" value="${escHtml(val)}" placeholder="📚 수업"
-        oninput="writeDailyTimeline('${dk}',${h},this.value)">`;
-    } else {
-      const ph=isP?'📌 개인 스케줄':(overlays.some(o=>o.type==='class')?'📚 수업':'할 일을 입력하세요...');
-      html+=`<div style="display:flex;align-items:center;justify-content:center;">
-        <input type="checkbox" class="personal-check" ${isP?'checked':''}
-          onchange="togglePersonal('${dk}',${h})" title="개인 스케줄 (달성률 제외)">
+      <div style="display:inline-block;background:linear-gradient(135deg,#5c4a42,#7a6458);color:#fdf6f0;padding:4px 14px;border-radius:20px;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">
+        📅 ${ddayText}
       </div>
-      <input class="daily-input" value="${escHtml(val)}" placeholder="${ph}"
-        oninput="writeDailyTimeline('${dk}',${h},this.value)">`;
+      <div class="completion-badge">달성률 ${pct}% ${getEmoji(pct)}</div>
+      <div class="progress-bar-wrap" style="max-width:240px;margin:4px auto 0">
+        <div class="progress-bar-fill" style="width:${pct}%;background:${getBarColor(pct)}"></div>
+      </div>
+    </div>
+
+    <!-- Daily Sub-Tabs -->
+    <div class="daily-tabs">
+      <button class="daily-tab ${dailySubTab==='timeline'?'active':''}" data-tab="timeline" onclick="switchDailyTab('timeline')">⏰ 타임라인</button>
+      <button class="daily-tab ${dailySubTab==='coach'?'active':''}" data-tab="coach" onclick="switchDailyTab('coach')">🤖 AI 코치</button>
+      <button class="daily-tab ${dailySubTab==='notes'?'active':''}" data-tab="notes" onclick="switchDailyTab('notes')">📋 메모</button>
+    </div>`;
+
+  // ═══ TIMELINE PANEL ═══
+  html += `<div id="dp-timeline" class="daily-panel ${dailySubTab==='timeline'?'active':''}">
+    <div class="legend" style="margin-bottom:8px;">
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(180,140,110,0.22)"></div><span>수업</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:rgba(200,80,70,0.20)"></div><span>개인 스케줄</span></div>
+      <div class="legend-item"><span style="font-size:13px">☑️</span><span>체크 → 달성률 제외</span></div>
+    </div>
+    <div class="card">`;
+
+  daySlots.forEach(slot => {
+    const isHalf = (slot.value % 1 !== 0);
+    const pe = state.dailyPersonal[dk] || {};
+    const isPersonal = !!pe[slot.value];
+
+    if (slot.type === 'transit') {
+      html += `<div class="daily-time-row transit-block">
+        <div class="daily-time-label ${isHalf?'half':''}">${formatTime(slot.value)}</div>
+        <div></div>
+        <div style="display:flex;align-items:center;padding:0 10px;font-size:11px;color:#b5a89e;font-family:'Quicksand',sans-serif;font-weight:500;">🚶 이동</div>
+      </div>`;
+    } else if (slot.type === 'class') {
+      const val = (state.dailyTimeline[dk] || {})[slot.value] || '';
+      html += `<div class="daily-time-row class-block">
+        <div class="daily-time-label ${isHalf?'half':''}">${formatTime(slot.value)}</div>
+        <div></div>
+        <input class="daily-input" value="${escHtml(val)}" placeholder="📚 수업"
+          oninput="if(!state.dailyTimeline['${dk}'])state.dailyTimeline['${dk}']={};state.dailyTimeline['${dk}'][${slot.value}]=this.value;debouncedSave();updateBadge('${dk}')">
+      </div>`;
+    } else {
+      const val = (state.dailyTimeline[dk] || {})[slot.value] || '';
+      const h = slot.dur === 1 ? 'min-height:48px' : '';
+      const dur = slot.dur || 0.5;
+      const rowClass = isPersonal ? 'daily-time-row personal-block' : 'daily-time-row';
+      html += `<div class="${rowClass}" style="${h}">
+        <div class="daily-time-label">${formatTime(slot.value)}</div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <input type="checkbox" class="personal-check" ${isPersonal?'checked':''}
+            onchange="togglePersonal('${dk}',${slot.value},${dur})"
+            title="개인 스케줄 (달성률 제외)">
+        </div>
+        <input class="daily-input" value="${escHtml(val)}" placeholder="${isPersonal ? '📌 개인 스케줄' : '할 일을 입력하세요...'}"
+          oninput="if(!state.dailyTimeline['${dk}'])state.dailyTimeline['${dk}']={};state.dailyTimeline['${dk}'][${slot.value}]=this.value;${dur===1 ? `state.dailyTimeline['${dk}'][${slot.value+0.5}]=this.value;` : ''}debouncedSave();updateBadge('${dk}')">
+      </div>`;
     }
-    html+=`</div>`;
   });
 
-  html+=`</div></div><div>
-    <div class="section-label">📋 Side Notes</div>
-    <div class="sidebar-card" id="flashcard-widget">
-      <div class="sidebar-title">📚 Law Flashcards?</div>
-      <div style="font-family:'Quicksand',sans-serif;font-size:13px;color:#9a8a80;">불러오는 중...</div>
+  html += `</div></div>`;
+
+  // ═══ AI COACH PANEL ═══
+  html += `<div id="dp-coach" class="daily-panel ${dailySubTab==='coach'?'active':''}">
+    <div class="coach-card">
+      <div class="sidebar-title">🤖 AI 학습코치</div>`;
+
+  if (!apiKey) {
+    html += `
+      <div class="api-key-setup">
+        <div style="margin-bottom:6px;">Claude API 키를 입력하면<br>AI 맞춤 코칭을 받을 수 있어요!</div>
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')setupApiKey()">
+        <button onclick="setupApiKey()">🔑 API 키 저장</button>
+        <div style="margin-top:6px;font-size:9px;color:#b5a89e;">
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#7a6458;">console.anthropic.com</a>에서 발급
+        </div>
+      </div>`;
+  } else {
+    const todoItems = getTodoItems(dk);
+
+    todoItems.forEach((item, idx) => {
+      html += `
+      <div class="task-item">
+        <input class="task-name-input" value="${escHtml(item.name)}" placeholder="할 일을 입력하세요 (예: 형소법 판례정리)"
+          oninput="updateTodoItem('${dk}',${idx},'name',this.value)">
+        <button class="task-remove-mobile" onclick="removeTodoItem('${dk}',${idx})" title="삭제">×</button>
+        <div class="task-meta">
+          <select onchange="updateTodoItem('${dk}',${idx},'hours',this.value)">
+            ${[0.5,1,1.5,2,2.5,3,4].map(h => `<option value="${h}" ${item.hours===h?'selected':''}>${h}시간</option>`).join('')}
+          </select>
+          <select onchange="updateTodoItem('${dk}',${idx},'difficulty',this.value)">
+            ${['상','중','하'].map(d => `<option value="${d}" ${item.difficulty===d?'selected':''}>${d === '상' ? '🔴 상' : d === '중' ? '🟡 중' : '🟢 하'}</option>`).join('')}
+          </select>
+          <select onchange="updateTodoItem('${dk}',${idx},'type',this.value)">
+            ${[['공부','📚 공부'],['운동','🏃 운동'],['생활','🏠 생활'],['기타','📌 기타']].map(([v,l]) => `<option value="${v}" ${item.type===v?'selected':''}>${l}</option>`).join('')}
+          </select>
+        </div>
+      </div>`;
+    });
+
+    html += `
+      <button class="add-task-btn" onclick="addTodoItem('${dk}')">+ 할 일 추가</button>
+      <button class="coach-btn" id="coach-btn" onclick="requestCoaching('${dk}')">🤖 AI 코칭 받기</button>
+      <div id="coach-result">`;
+
+    const savedCoaching = (state.dailyCoaching || {})[dk];
+    if (savedCoaching) {
+      const ts = new Date(savedCoaching.timestamp);
+      const timeStr = `${ts.getHours()}:${String(ts.getMinutes()).padStart(2,'0')}`;
+      html += `<h4>🤖 AI 학습코치 <span style="font-size:10px;font-weight:400;color:#9a8a80;">(${timeStr})</span></h4>${formatCoachingText(savedCoaching.text)}`;
+    }
+
+    html += `</div>
+      <div style="margin-top:8px;text-align:right;">
+        <button class="api-key-toggle" onclick="if(confirm('API 키를 변경하시겠습니까?')){saveApiKey('');renderDaily();}">🔑 API 키 변경</button>
+      </div>`;
+  }
+
+  html += `</div></div>`;
+
+  // ═══ NOTES PANEL ═══
+  html += `<div id="dp-notes" class="daily-panel ${dailySubTab==='notes'?'active':''}">
+    <div class="sidebar-card">
+      <div class="sidebar-title">📝 메모</div>
+      <textarea class="text-area" placeholder="자유 메모..."
+        oninput="state.dailyTasks['${dk}']=this.value;debouncedSave()">${escHtml(tasks)}</textarea>
     </div>
-    <div class="sidebar-card"><div class="sidebar-title">✓ To Do List</div>
-      <textarea class="text-area" placeholder="- 과제 제출&#10;- 이메일 확인"
-        oninput="state.dailyTasks['${dk}']=this.value;debouncedSave()">${escHtml(tasks)}</textarea></div>
-    <div class="sidebar-card"><div class="sidebar-title">🍽 Meal Log</div>
+    <div class="sidebar-card">
+      <div class="sidebar-title">🍽 Meal Log</div>
       <div class="meal-grid">
-        <div><div class="meal-label">점심 Lunch</div><textarea class="text-area small" placeholder="메뉴"
-          oninput="if(!state.dailyMeals['${dk}'])state.dailyMeals['${dk}']={};state.dailyMeals['${dk}'].lunch=this.value;debouncedSave()">${escHtml(meals.lunch||'')}</textarea></div>
-        <div><div class="meal-label">저녁 Dinner</div><textarea class="text-area small" placeholder="메뉴"
-          oninput="if(!state.dailyMeals['${dk}'])state.dailyMeals['${dk}']={};state.dailyMeals['${dk}'].dinner=this.value;debouncedSave()">${escHtml(meals.dinner||'')}</textarea></div>
-      </div></div>
-    <div class="sidebar-card"><div class="sidebar-title">💪 Workout Log</div>
-      <textarea class="text-area" style="min-height:60px" placeholder="운동 종류, 시간, 세트&#10;예: 러닝 30분"
-        oninput="state.dailyExercise['${dk}']=this.value;debouncedSave()">${escHtml(exercise)}</textarea></div>
-  </div></div>`;
+        <div>
+          <div class="meal-label">점심 Lunch</div>
+          <textarea class="text-area small" placeholder="메뉴를 적어주세요"
+            oninput="if(!state.dailyMeals['${dk}'])state.dailyMeals['${dk}']={};state.dailyMeals['${dk}'].lunch=this.value;debouncedSave()">${escHtml(meals.lunch||'')}</textarea>
+        </div>
+        <div>
+          <div class="meal-label">저녁 Dinner</div>
+          <textarea class="text-area small" placeholder="메뉴를 적어주세요"
+            oninput="if(!state.dailyMeals['${dk}'])state.dailyMeals['${dk}']={};state.dailyMeals['${dk}'].dinner=this.value;debouncedSave()">${escHtml(meals.dinner||'')}</textarea>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-title">💪 Workout Log</div>
+      <textarea class="text-area" style="min-height:60px" placeholder="운동 종류, 시간, 세트 등&#10;예: 러닝 30분, 스쿼트 3x15"
+        oninput="state.dailyExercise['${dk}']=this.value;debouncedSave()">${escHtml(exercise)}</textarea>
+    </div>
+  </div>`;
 
   document.getElementById('view-daily').innerHTML = html;
-
-  getFlashcardLog(dk).then(log=>{
-    const w=document.getElementById('flashcard-widget');if(!w)return;
-    if(log&&log.sessions>0){
-      const p=Math.round((log.correct/log.total)*100);
-      w.innerHTML=`<div class="sidebar-title">📚 Law Flashcards?</div>
-        <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:28px;">⭕</span>
-        <div style="font-family:'Quicksand',sans-serif;"><div style="font-size:14px;font-weight:700;color:#4a7c59;">학습 완료!</div>
-        <div style="font-size:11px;color:#9a8a80;margin-top:2px;">${log.sessions}회 · ${log.correct}/${log.total} 정답 (${p}%)</div></div></div>
-        <a href="https://coffeeinacoffin.github.io/law_flashcard/" target="_blank" style="display:block;margin-top:10px;padding:8px;border-radius:8px;background:rgba(122,100,88,0.08);text-align:center;font-family:'Quicksand',sans-serif;font-size:12px;font-weight:600;color:#6b5850;text-decoration:none;">🔗 이어서 학습하기</a>`;
-    } else {
-      w.innerHTML=`<div class="sidebar-title">📚 Law Flashcards?</div>
-        <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:28px;">❌</span>
-        <div style="font-family:'Quicksand',sans-serif;"><div style="font-size:14px;font-weight:700;color:#c05050;">미학습</div>
-        <div style="font-size:11px;color:#9a8a80;margin-top:2px;">오늘 아직 학습 기록이 없어요</div></div></div>
-        <a href="https://coffeeinacoffin.github.io/law_flashcard/" target="_blank" style="display:block;margin-top:10px;padding:8px;border-radius:8px;background:linear-gradient(135deg,#5c4a42,#7a6458);text-align:center;font-family:'Quicksand',sans-serif;font-size:12px;font-weight:600;color:#fdf6f0;text-decoration:none;">📖 지금 학습하러 가기</a>`;
-    }
-  });
-}
-
-function writeDailyTimeline(dk, h, val) {
-  if(!state.dailyTimeline[dk]) state.dailyTimeline[dk]={};
-  state.dailyTimeline[dk][h]=val;
-  state.dailyTimeline[dk][h+0.5]=val;
-  debouncedSave(); updateBadge(dk);
 }
 
 function updateBadge(dk) {
-  const c=getCompletion(dk),p=Math.round(c*100);
-  const b=document.querySelector('.completion-badge'),f=document.querySelector('.progress-bar-fill');
-  if(b)b.textContent=`달성률 ${p}% ${getEmoji(p)}`;
-  if(f){f.style.width=p+'%';f.style.background=getBarColor(p);}
+  const comp = getCompletion(dk);
+  const pct = Math.round(comp * 100);
+  const badge = document.querySelector('.completion-badge');
+  const bar = document.querySelector('.progress-bar-fill');
+  if (badge) badge.textContent = `달성률 ${pct}% ${getEmoji(pct)}`;
+  if (bar) { bar.style.width = pct+'%'; bar.style.background = getBarColor(pct); }
 }
+
 function shiftDate(delta) {
-  const d=new Date(selectedDate.year,selectedDate.month,selectedDate.day+delta);
-  selectedDate={year:d.getFullYear(),month:d.getMonth(),day:d.getDate()}; renderDaily();
+  const d = new Date(selectedDate.year, selectedDate.month, selectedDate.day + delta);
+  selectedDate = { year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
+  renderDaily();
 }
 
 // ── MONTHLY ──
 function renderMonthly() {
-  const{year,month}=currentMonth, dim=getDaysInMonth(year,month), fd=getFirstDay(year,month), today=new Date();
-  let html=`<div class="month-nav"><button class="nav-btn" onclick="shiftMonth(-1)">‹</button>
-    <div class="month-title">${MONTH_NAMES[month]} ${year}</div>
-    <button class="nav-btn" onclick="shiftMonth(1)">›</button></div>
-    <div class="legend" style="justify-content:center">
-      <div class="legend-item"><span>🤩</span><span>80%+</span></div><div class="legend-item"><span>😊</span><span>65%+</span></div>
-      <div class="legend-item"><span>🙂</span><span>50%+</span></div><div class="legend-item"><span>😦</span><span>35%+</span></div>
-      <div class="legend-item"><span>😴</span><span>20%+</span></div><div class="legend-item"><span>😈</span><span>~20%</span></div>
-    </div><div class="card"><div class="calendar-grid">`;
-  ["MON","TUE","WED","THU","FRI","SAT","SUN"].forEach(d=>{html+=`<div class="cal-header">${d}</div>`;});
-  for(let i=0;i<fd;i++) html+=`<div class="cal-day empty"></div>`;
-  for(let d=1;d<=dim;d++){
-    const dk=dateKey(year,month,d),c=getCompletion(dk),ce=getCalEmoji(c);
-    const isT=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===d;
-    html+=`<div class="cal-day ${isT?'today':''}" onclick="goToDay(${year},${month},${d})" title="${Math.round(c*100)}%">
-      <div class="cal-day-num">${d}</div>${ce?`<div class="cal-emoji">${ce}</div>`:''}</div>`;
-  }
-  html+=`</div></div>`;
-  document.getElementById('view-monthly').innerHTML=html;
-}
-function shiftMonth(d){let m=currentMonth.month+d,y=currentMonth.year;if(m<0){m=11;y--;}if(m>11){m=0;y++;}currentMonth={year:y,month:m};renderMonthly();}
-function goToDay(y,m,d){selectedDate={year:y,month:m,day:d};switchView('daily');}
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  const { year, month } = currentMonth;
+  const dim = getDaysInMonth(year, month);
+  const fd = getFirstDay(year, month);
+  const today = new Date();
 
-loadFromFirebase().then(()=>renderWeekly());
+  let html = `
+    <div class="month-nav">
+      <button class="nav-btn" onclick="shiftMonth(-1)">‹</button>
+      <div class="month-title">${MONTH_NAMES[month]} ${year}</div>
+      <button class="nav-btn" onclick="shiftMonth(1)">›</button>
+    </div>
+    <div class="legend" style="justify-content:center">
+      <div class="legend-item"><span>🤩</span><span>80%+</span></div>
+      <div class="legend-item"><span>😊</span><span>65%+</span></div>
+      <div class="legend-item"><span>🙂</span><span>50%+</span></div>
+      <div class="legend-item"><span>😦</span><span>35%+</span></div>
+      <div class="legend-item"><span>😴</span><span>20%+</span></div>
+      <div class="legend-item"><span>😈</span><span>~20%</span></div>
+    </div>
+    <div class="card">
+      <div class="calendar-grid">`;
+
+  ["MON","TUE","WED","THU","FRI","SAT","SUN"].forEach(d => {
+    html += `<div class="cal-header">${d}</div>`;
+  });
+
+  for (let i = 0; i < fd; i++) html += `<div class="cal-day empty"></div>`;
+
+  for (let d = 1; d <= dim; d++) {
+    const dk = dateKey(year, month, d);
+    const comp = getCompletion(dk);
+    const ce = getCalEmoji(comp);
+    const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
+
+    html += `<div class="cal-day ${isToday?'today':''}" onclick="goToDay(${year},${month},${d})" title="${Math.round(comp*100)}% 달성">
+      <div class="cal-day-num">${d}</div>
+      ${ce ? `<div class="cal-emoji">${ce}</div>` : ''}
+    </div>`;
+  }
+
+  html += `</div></div>`;
+  document.getElementById('view-monthly').innerHTML = html;
+}
+
+function shiftMonth(delta) {
+  let m = currentMonth.month + delta;
+  let y = currentMonth.year;
+  if (m < 0) { m = 11; y--; }
+  if (m > 11) { m = 0; y++; }
+  currentMonth = { year: y, month: m };
+  renderMonthly();
+}
+
+function goToDay(y,m,d) {
+  selectedDate = { year: y, month: m, day: d };
+  switchView('daily');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init: load from Firebase then render ──
+loadFromFirebase().then(() => {
+  loadApiKey().then(() => { renderWeekly(); });
+});
 </script>
 </body>
 </html>
