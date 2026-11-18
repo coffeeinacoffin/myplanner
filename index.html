@@ -885,7 +885,8 @@ ${taskList}
       },
       body: JSON.stringify({
         model: 'claude-haiku-5-5',
-        max_tokens: 1024,
+        max_tokens: 2048,
+        thinking: { type: 'disabled' },
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -906,7 +907,7 @@ ${taskList}
       }
     }
     if (!text) {
-      throw new Error('응답 구조: ' + JSON.stringify(data).slice(0, 300));
+      throw new Error('API 응답에서 텍스트를 찾을 수 없습니다.');
     }
 
     // Save coaching result
