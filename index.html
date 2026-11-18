@@ -967,13 +967,103 @@ function getWeeklyCellType(day, hourStart) {
   return 'free';
 }
 
+function toggleKeepPrevSchedule(checked) {
+  const inputsDiv = document.getElementById('schedule-inputs');
+  if (checked) {
+    // Clear custom schedule → fall back to DEFAULT_CLASS_SCHEDULE
+    state.classSchedule = {};
+    debouncedSave();
+    inputsDiv.style.opacity = '0.4';
+    inputsDiv.style.pointerEvents = 'none';
+    // Reset input values to show defaults
+    const sched = getClassSchedule();
+    document.querySelectorAll('.sched-input').forEach(el => {
+      const day = el.dataset.day;
+      const ranges = sched[day] || [];
+      el.value = ranges.map(([s,e]) => {
+        const fmtH = v => { const h = Math.floor(v); const m = v%1===0.5?'30':'00'; return `${h}:${m}`; };
+        return `${fmtH(s)}~${fmtH(e)}`;
+      }).join(', ');
+    });
+  } else {
+    // Unlock editing — copy current defaults into state.classSchedule so edits persist
+    const sched = getClassSchedule();
+    state.classSchedule = {};
+    DAYS.forEach(d => {
+      const ranges = sched[d] || [];
+      state.classSchedule[d] = ranges.map(([s,e]) => {
+        const fmtH = v => { const h = Math.floor(v); const m = v%1===0.5?'30':'00'; return `${h}:${m}`; };
+        return `${fmtH(s)}~${fmtH(e)}`;
+      }).join(', ');
+    });
+    debouncedSave();
+    inputsDiv.style.opacity = '1';
+    inputsDiv.style.pointerEvents = 'auto';
+  }
+  renderWeekly();
+}
+
 function renderWeekly() {
   const todayIdx = (() => { const d = new Date().getDay(); return d===0?6:d-1; })();
   const hourRows = [];
   for (let h = 8; h <= 27; h++) hourRows.push(h);
 
+  // Calculate dates for this week (Mon~Sun)
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Sun
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+
+  const weekDates = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    weekDates.push(d);
+  }
+
+  // Class schedule editing
+  const sched = getClassSchedule();
+  const formatSchedRange = (day) => {
+    const ranges = sched[day] || [];
+    return ranges.map(([s,e]) => {
+      const fmtH = v => { const h = Math.floor(v); const m = v%1===0.5?'30':'00'; return `${h}:${m}`; };
+      return `${fmtH(s)}~${fmtH(e)}`;
+    }).join(', ');
+  };
+
   let html = `
     <div class="section-label">⭐ Weekly Schedule</div>
+
+    <!-- Class Schedule Settings -->
+    <details class="class-schedule-settings" style="margin-bottom:12px;">
+      <summary style="cursor:pointer;font-size:12px;font-weight:600;color:#7a6458;padding:8px 12px;background:rgba(255,255,255,0.5);border-radius:10px;border:1px solid rgba(192,172,158,0.25);user-select:none;">
+        📚 수업시간 설정 (클릭하여 열기)
+      </summary>
+      <div style="margin-top:8px;padding:12px;background:rgba(255,255,255,0.6);border-radius:12px;border:1px solid rgba(192,172,158,0.25);">
+        <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px;cursor:pointer;padding:6px 10px;background:rgba(92,74,66,0.06);border-radius:8px;">
+          <input type="checkbox" id="keep-prev-schedule" ${!state.classSchedule || Object.keys(state.classSchedule).length === 0 ? 'checked' : ''}
+            onchange="toggleKeepPrevSchedule(this.checked)"
+            style="accent-color:#7a6458;width:16px;height:16px;">
+          <span style="font-size:12px;font-weight:600;color:#5c4a42;">이전 주 수업시간 그대로 적용</span>
+        </label>
+        <div id="schedule-inputs" style="${!state.classSchedule || Object.keys(state.classSchedule).length === 0 ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <div style="font-size:10px;color:#9a8a80;margin-bottom:8px;">형식: 시작~끝 (여러 개는 쉼표로 구분, 예: 9:00~12:00, 15:00~16:30)</div>
+          ${DAYS.map(d => `
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+              <span style="font-size:11px;font-weight:700;color:#6b5850;width:36px;">${d}</span>
+              <input type="text" class="sched-input" data-day="${d}" value="${escHtml(state.classSchedule && state.classSchedule[d] ? state.classSchedule[d] : formatSchedRange(d))}"
+                placeholder="예: 9:00~12:00, 15:00~16:30"
+                style="flex:1;border:1px solid rgba(192,172,158,0.3);border-radius:7px;padding:5px 8px;font-size:11px;color:#3a3230;background:rgba(253,246,240,0.6);outline:none;"
+                oninput="if(!state.classSchedule)state.classSchedule={};state.classSchedule['${d}']=this.value;debouncedSave();"
+                onchange="renderWeekly();">
+            </div>
+          `).join('')}
+        </div>
+        <div style="font-size:9px;color:#b5a89e;margin-top:6px;">💡 체크 해제 후 수정하면 Daily 타임라인과 AI 코치에도 자동 반영됩니다</div>
+      </div>
+    </details>
+
     <div class="legend">
       <div class="legend-item"><div class="legend-swatch" style="background:rgba(180,140,110,0.22)"></div><span>수업</span></div>
       <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(-45deg,rgba(180,160,140,0.15),rgba(180,160,140,0.15) 3px,transparent 3px,transparent 6px)"></div><span>이동</span></div>
@@ -984,8 +1074,10 @@ function renderWeekly() {
         <div class="grid-header time-col">TIME</div>`;
 
   DAYS.forEach((d,i) => {
+    const wd = weekDates[i];
+    const dateStr = `${wd.getMonth()+1}/${wd.getDate()}`;
     const bg = i === todayIdx ? 'background:linear-gradient(180deg,#8b6f5e,#7a5e4e)' : '';
-    html += `<div class="grid-header" style="${bg}">${d}</div>`;
+    html += `<div class="grid-header" style="${bg}">${d}<br><span style="font-size:9px;font-weight:400;opacity:0.85;">${dateStr}</span></div>`;
   });
 
   hourRows.forEach(h => {
